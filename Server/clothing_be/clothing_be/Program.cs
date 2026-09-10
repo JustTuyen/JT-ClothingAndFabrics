@@ -1,0 +1,84 @@
+using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
+using clothing_be.Data;
+using clothing_be.Services.Media;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+//swagger
+builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
+
+//cors
+builder.Services.AddCors(options => 
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
+//DB
+var connectionString = builder.Configuration.GetConnectionString("cnn");
+builder.Services.AddDbContext<MyDbContextApplication>(options =>
+    options.UseNpgsql(connectionString));
+
+//S3
+
+var awsAccessKey = builder.Configuration["AWS:AccessKey"];
+var awsSecretKey = builder.Configuration["AWS:SecretKey"];
+var awsRegion = builder.Configuration["AWS:Region"];
+var credentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
+var s3Config = new AmazonS3Config
+{
+    RegionEndpoint = RegionEndpoint.GetBySystemName(awsRegion)
+};
+
+builder.Services.AddSingleton<IAmazonS3>(new AmazonS3Client(credentials, s3Config));
+builder.Services.AddScoped<IImageUploadService, S3ImageUploadService>();
+
+//builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+//builder.Services.AddAWSService<IAmazonS3>();
+//builder.Services.AddScoped<IImageUploadService, S3ImageUploadService>();
+
+
+
+//policy.WithOrigins("https://yourdomain.com")
+//      .AllowAnyHeader()
+//      .AllowAnyMethod();
+
+var app = builder.Build();
+
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.RoutePrefix = string.Empty;
+    });
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+app.UseHttpsRedirection();
+app.UseRouting();
+app.MapControllers();
+app.UseAuthorization();
+//
+//app.UseHsts();
+
+app.MapStaticAssets();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
+
+app.Run();

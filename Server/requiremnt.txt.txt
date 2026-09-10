@@ -1,0 +1,3 @@
+add SixLabors.ImageSharp
+add AWSSDK.S3
+add 
