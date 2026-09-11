@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+nav{
+    background-color: #00B7CD;
+    color: white;
+    font-weight: bold;
+}
+
+
+@media (max-width: 1024px) {
+    .nav-items{
+        display: none;
+    }
+}
