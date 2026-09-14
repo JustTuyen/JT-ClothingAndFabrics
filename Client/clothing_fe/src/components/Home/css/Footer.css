@@ -1,0 +1,11 @@
+.web-icon{
+    height: 120px;
+    width: 175px;
+}
+
+@media (width: 1024px){
+    .web-icon{
+        height: 100px;
+        width: 155px;
+    }
+}

@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
 import SliderPackage from "react-slick";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Slider = (SliderPackage as any).default || SliderPackage;
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Button } from "@mui/material";
 
-// Interface định kiểu dữ liệu cho TypeScript
 interface ReviewData {
   name: string;
   img: string;
@@ -37,8 +37,8 @@ const data: ReviewData[] = [
 ];
 
 
-function Testing() {
-   const sliderRef = useRef<Slider | null>(null);
+function Discount() {
+   const sliderRef = useRef<typeof Slider | null>(null);
 
     const next = () => {
         sliderRef.current?.slickNext();
@@ -51,7 +51,7 @@ function Testing() {
         dots: true,
         infinite: true,
         speed: 1000,
-        slidesToShow: 3,
+        slidesToShow: 2,
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 2000,
@@ -78,7 +78,7 @@ function Testing() {
         <div className="w-4/5">
             <div className="justify-end flex gap-2 p-2">
                  <div style={{ textAlign: "center" }} 
-                  className="mt-6">
+                  className="mt-6 flex gap-2">
                     <Button variant="outlined" onClick={previous}>
                         Previous
                     </Button>
@@ -114,4 +114,4 @@ function Testing() {
     );
 }
 
-export default Testing;
+export default Discount;

@@ -1,5 +1,5 @@
 import Icon from '../assets/Icon.png'
-import './NavBar.css'
+import './Home/css/NavBar.css'
 import * as React from 'react';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import ShoppingBasketOutlinedIcon from '@mui/icons-material/ShoppingBasketOutlined';
@@ -13,7 +13,7 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 //
-import LongMenu from './LongMenu';
+import LongMenu from './Home/LongMenu';
 const CartBadge = styled(Badge)`
   & .${badgeClasses.badge} {
     top: -12px;

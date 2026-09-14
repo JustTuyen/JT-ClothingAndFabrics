@@ -1,4 +1,4 @@
-import './Banner.css'
+import './css//Banner.css'
 import { useState } from "react"
 import CircleIcon from '@mui/icons-material/Circle';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
