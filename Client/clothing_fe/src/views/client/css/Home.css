@@ -1,0 +1,35 @@
+#fire-icon {
+  display: inline-block;
+  animation: pulse 1.5s infinite ease-in-out; 
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1); /* Start at normal size */
+  }
+  50% {
+    transform: scale(1.4); /* Grow 40% bigger at the halfway point */
+  }
+  100% {
+    transform: scale(1); /* Shrink back down to normal size */
+  }
+}
+
+#discount-chip {
+  display: inline-block;
+  animation: pulse 1.5s infinite ease-in-out; 
+  justify-content: center;
+  padding: 5px 10px;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1); /* Start at normal size */
+  }
+  50% {
+    transform: scale(1.2); /* Grow 40% bigger at the halfway point */
+  }
+  100% {
+    transform: scale(1); /* Shrink back down to normal size */
+  }
+}
