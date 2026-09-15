@@ -1,0 +1,15 @@
+.img-gallery {
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 1;
+    object-fit: contain;
+    object-position: center;
+}
+
+.thumb-gallery {
+    width: 100%;
+    max-width: 100px;
+    aspect-ratio: 1;
+    object-fit: cover;
+    object-position: center;
+}

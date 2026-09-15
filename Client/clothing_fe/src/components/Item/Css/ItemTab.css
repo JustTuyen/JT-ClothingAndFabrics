@@ -1,0 +1,128 @@
+
+.tab{
+  font-size: 18px;
+}
+
+@media (max-width: 1024px) {
+  .tab{
+    font-size: 18px;
+  }
+}
+
+/* #DF301C */
+.hover-line1 {
+  position: relative;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
+
+
+/* Create a hidden line beneath the text using a pseudo-element */
+.hover-line1::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0); /* Hide the line by shrinking it to 0 width */
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #00B7CD;
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out; /* Smooth transition instead of keyframes */
+}
+
+/* Reveal the line on hover */
+.hover-line1:hover::after {
+  transform: scaleX(1); /* Stretch the line to full width */
+  transform-origin: bottom left;
+}
+
+
+
+/* #FF9100 */
+.hover-line2 {
+  position: relative;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
+/* Create a hidden line beneath the text using a pseudo-element */
+.hover-line2::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0); /* Hide the line by shrinking it to 0 width */
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #FF9100;
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out; /* Smooth transition instead of keyframes */
+}
+
+/* Reveal the line on hover */
+.hover-line2:hover::after {
+  transform: scaleX(1); /* Stretch the line to full width */
+  transform-origin: bottom left;
+}
+
+
+/* #00B7CD */
+.hover-line3 {
+  position: relative;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
+/* Create a hidden line beneath the text using a pseudo-element */
+.hover-line3::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0); /* Hide the line by shrinking it to 0 width */
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #DF301C;
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out; /* Smooth transition instead of keyframes */
+}
+
+/* Reveal the line on hover */
+.hover-line3:hover::after {
+  transform: scaleX(1); /* Stretch the line to full width */
+  transform-origin: bottom left;
+}
+
+
+#discount-chip {
+  display: inline-block;
+  justify-content: center;
+  padding: 5px 10px;
+  animation: pulse 1.5s infinite ease-in-out; 
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1); /* Start at normal size */
+  }
+  50% {
+    transform: scale(1.3); /* Grow 40% bigger at the halfway point */
+  }
+  100% {
+    transform: scale(1); /* Shrink back down to normal size */
+  }
+}
+
+.sizing-img{
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+
+}
