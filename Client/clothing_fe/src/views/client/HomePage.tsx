@@ -49,7 +49,7 @@ export default function Home(){
                     <LocalFireDepartmentIcon id='fire-icon' sx={{fontSize: 'inherit', color: '#DF301C'}}/>
                     <p className="font-bold">Top <span className="text-[32px] underline">10</span> Sản Phẩm của KingDom</p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 p-2 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-2 gap-4">
                     <Card sx={{ maxWidth: 345}}>
                         <CardActionArea>
                             <div className="relative flex">
