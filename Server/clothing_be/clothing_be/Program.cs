@@ -42,7 +42,12 @@ builder.Services.AddScoped<IImageUploadService, S3ImageUploadService>();
 //builder.Services.AddAWSService<IAmazonS3>();
 //builder.Services.AddScoped<IImageUploadService, S3ImageUploadService>();
 
-
+//Timeout
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
+//    options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(30);
+//});
 
 //policy.WithOrigins("https://yourdomain.com")
 //      .AllowAnyHeader()
