@@ -2,7 +2,8 @@
 import React from "react";
 //
 import place from '../../assets/place.webp'
-
+//
+import DetailCard from "../ProductDetailCard";
 //
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
@@ -13,14 +14,12 @@ import Button from '@mui/material/Button';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardActions from '@mui/material/CardActions';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 
 //
 import NewReleasesOutlinedIcon from '@mui/icons-material/NewReleasesOutlined';
 import ElectricBoltOutlinedIcon from '@mui/icons-material/ElectricBoltOutlined';
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import WhatshotOutlinedIcon from '@mui/icons-material/WhatshotOutlined';
 //css
 import './css/DisplayTab.css'
@@ -76,11 +75,7 @@ function NewArrival(){
                             sx={{ backgroundColor: '#DF301C', borderRadius: '16px'}}>
                                 Thêm vào giỏ
                             </Button>
-                            <Tooltip title="Xem trước">
-                                 <IconButton sx={{ backgroundColor: '#BFC9D1' }} size="medium">
-                                    <RemoveRedEyeOutlinedIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
+                            <DetailCard/>
                         </CardActions>  
                     </CardContent>
                 </Card>              
@@ -159,11 +154,7 @@ function BestDeal(){
                             sx={{ backgroundColor: '#DF301C', borderRadius: '16px' }}>
                                 Thêm vào giỏ
                             </Button>
-                            <Tooltip title="Xem trước">
-                                 <IconButton sx={{ backgroundColor: '#BFC9D1' }} size="medium">
-                                    <RemoveRedEyeOutlinedIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
+                            <DetailCard/>
                            
                         </CardActions>  
                     </CardContent>
@@ -230,11 +221,7 @@ function HotProduct(){
                             sx={{ backgroundColor: '#DF301C', borderRadius: '16px' }}>
                                 Thêm vào giỏ
                             </Button>
-                            <Tooltip title="Xem trước">
-                                 <IconButton sx={{ backgroundColor: '#BFC9D1' }} size="medium">
-                                    <RemoveRedEyeOutlinedIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
+                            <DetailCard/>
                            
                         </CardActions>  
                     </CardContent>

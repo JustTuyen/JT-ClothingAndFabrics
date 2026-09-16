@@ -4,6 +4,7 @@ import Discount from '../../components/Home/Discount'
 import DisplayTab from "../../components/Home/DisplayTab"
 import CategoryLog from "../../components/Home/CategoryLog"
 import Footer from "../../components/Footer"
+import DetailCard from "../../components/ProductDetailCard"
 //
 import Banner01 from '../../assets/banner01.webp'
 import Banner02 from '../../assets/banner02.webp'
@@ -18,12 +19,10 @@ import Button from '@mui/material/Button';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardActions from '@mui/material/CardActions';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 //icons
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import ElectricBoltOutlinedIcon from '@mui/icons-material/ElectricBoltOutlined';
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import WhatshotOutlinedIcon from '@mui/icons-material/WhatshotOutlined';
 
 //css
@@ -94,11 +93,7 @@ export default function Home(){
                                 sx={{ backgroundColor: '#DF301C', borderRadius: '16px'}}>
                                     Thêm vào giỏ
                                 </Button>
-                                <Tooltip title="Xem trước">
-                                    <IconButton sx={{ backgroundColor: '#BFC9D1' }} size="medium">
-                                        <RemoveRedEyeOutlinedIcon fontSize="inherit" />
-                                    </IconButton>
-                                </Tooltip>
+                                <DetailCard/>
                             </CardActions>  
                         </CardContent>
                     </Card>              

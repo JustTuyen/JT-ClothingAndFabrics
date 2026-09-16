@@ -9,3 +9,7 @@
         width: 155px;
     }
 }
+
+ul li{
+   cursor: pointer; 
+}

@@ -1,5 +1,5 @@
 import Comment from '../../components/Item/Comments'
-import SuggestBox from '../../components/Item/suggestion';
+import SuggestBox from '../../components/Item/Suggestion';
 import ItemGallery from '../../components/Item/ItemGallery'
 import Footer from "../../components/Footer";
 import Navbar from "../../components/NavBar";
