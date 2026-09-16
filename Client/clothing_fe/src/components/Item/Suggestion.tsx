@@ -1,3 +1,5 @@
+
+import DetailCard from '../ProductDetailCard';
 //
 import './Css/Suggestion.css'
 //
@@ -12,11 +14,9 @@ import Button from '@mui/material/Button';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardActions from '@mui/material/CardActions';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 //
 import ElectricBoltOutlinedIcon from '@mui/icons-material/ElectricBoltOutlined';
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
 //
 
@@ -70,11 +70,7 @@ export default function SuggestBox(){
                             sx={{ backgroundColor: '#DF301C', borderRadius: '16px'}}>
                                 Thêm vào giỏ
                             </Button>
-                            <Tooltip title="Xem trước">
-                                <IconButton sx={{ backgroundColor: '#BFC9D1' }} size="medium">
-                                    <RemoveRedEyeOutlinedIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
+                            <DetailCard/>
                         </CardActions>  
                     </CardContent>
                 </Card>              

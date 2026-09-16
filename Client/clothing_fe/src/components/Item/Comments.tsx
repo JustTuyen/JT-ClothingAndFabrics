@@ -5,19 +5,21 @@ import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
+import Rating from '@mui/material/Rating';
+
+
 //
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 //
-
+import './Css/Comment.css'
+//
 const options = [
   'Report',
 ];
@@ -43,7 +45,8 @@ export default function Comment(){
                    Đánh Giá - Nhận Xét Từ Khách Hàng 
                 </h1>
             </div>
-            <div className="w-full shadow-xl p-4 rounded-lg">
+            
+            <div className="w-1/3 p-4 rounded-lg comment-box">
                 <select className='text-[#00B7CD]'>
                     <option value="">This</option>
                     <option value="">This</option>
@@ -98,20 +101,21 @@ export default function Comment(){
                             </MenuItem>
                             ))}
                         </Menu>
-                        <CardContent>                    
-                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                Is very good . Buy for my godma. She arw very happy
-                            </Typography>
+                        <CardContent sx={{borderTop: '1px solid #EFEFEF'}}>     
+                                <Rating name="size-small" defaultValue={2} size="small" />
+                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                    Is very good . Buy for my godma. She arw very happy
+                                </Typography>
                         </CardContent>
                     </Card>                   
                 </div>
 
-                <div className="flex justify-center p-8">
-                    <Pagination sx={{backgroundColor: 'transparent'}}  
-                    count={10} showFirstButton showLastButton />
-                </div>
+                
             </div>
-
+            <div className="flex justify-center p-8">
+                <Pagination sx={{backgroundColor: 'transparent'}}  
+                count={10} showFirstButton showLastButton />
+            </div>
         </div>
         </>
     )

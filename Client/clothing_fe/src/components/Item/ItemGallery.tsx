@@ -30,7 +30,7 @@ export default function ItemGallery() {
   const mainSettings: Settings = {
     asNavFor: nav2 || undefined,
     dots: false,
-    arrows: true,
+    arrows: false,
     autoplay: true,
     autoplaySpeed: 3000,
     cssEase: "linear",
