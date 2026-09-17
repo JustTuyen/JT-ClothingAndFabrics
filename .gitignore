@@ -1,7 +1,8 @@
 Server/clothing_be/clothing_be/appsettings.json
 Server/clothing_be/clothing_be/appsettings.Development.json
 
-
+# Visual Studio cache/options
+.vs
 bin/
 obj/
 [Dd]ebug/
