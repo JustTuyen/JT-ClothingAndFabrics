@@ -35,14 +35,38 @@ public class StatusModelsController : ControllerBase
         return Ok(dto);
     }
 
+    [HttpGet("${type}")]
+    public async Task <ActionResult<StatusDTO>> GetByType(string type)
+    {
+        var stas = await _context.Statuses.Where(st => st.Type == type).ToListAsync();
+
+        if (stas == null) { return NoContent(); }
+
+        var dto = stas.Select(sta => new StatusDTO
+        {
+            Id = sta.Id,
+            Name = sta.Name,
+            Type = sta.Type
+        }).ToList();
+
+        return Ok(dto);
+    }
+
     [HttpGet("{id}")]
     public async Task <ActionResult<StatusDTO>> GetStatus(int id)
     {
-        var dto = await _context.Statuses
+        var sta = await _context.Statuses
             .FirstOrDefaultAsync(s => s.Id == id);
 
 
-        if(dto == null) return NotFound();
+        if(sta == null) return NotFound();
+
+        var dto = new StatusDTO
+        {
+            Id = sta.Id,
+            Name = sta.Name,
+            Type = sta.Type
+        };
 
         return Ok(dto); 
     }
@@ -55,7 +79,9 @@ public class StatusModelsController : ControllerBase
 
         var exist = await _context.Statuses
             .AnyAsync( s => s.Name == dto.Name && s.Type == dto.Type);
+
         if (exist) return BadRequest($"Status '{dto.Name}' với Type '{dto.Type}' đã tồn tại.");
+
         var status = new StatusModel
         {
             Name = dto.Name,
@@ -67,14 +93,14 @@ public class StatusModelsController : ControllerBase
         _context.Statuses.Add(status);
         await _context.SaveChangesAsync();
 
-        var stadto = new StatusDTO
+        var resultdto = new StatusDTO
         {
             Id = status.Id,
             Name = status.Name,
             Type = status.Type,
         };
 
-        return CreatedAtAction(nameof(GetStatus), new { id = status.Id }, stadto);
+        return CreatedAtAction(nameof(GetStatus), new { id = status.Id }, resultdto);
     }
 
     [HttpPut("{id}")]
@@ -87,6 +113,7 @@ public class StatusModelsController : ControllerBase
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (cat == null) return NotFound();
+
         cat.Name = dto.Name;
         cat.Type = dto.Type;
         cat.UpdatedAt = DateTime.UtcNow;
@@ -104,5 +131,15 @@ public class StatusModelsController : ControllerBase
         };
 
         return Ok(updatedto);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task <ActionResult<StatusModel>> DeleteStatus(int id)
+    {
+        var sta = await _context.Statuses.FirstOrDefaultAsync(st => st.Id == id);
+        _context.Statuses.Remove(sta);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 }
