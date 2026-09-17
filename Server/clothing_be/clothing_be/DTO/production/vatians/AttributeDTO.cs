@@ -12,5 +12,13 @@
     {
         public string Name { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
+        public List<int> AttributeValueIds { get; set; } = new();
+    }
+
+    public class UpdateAttributeDTO
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public List<int> AttributeValueIds { get; set; } = new();
     }
 }
