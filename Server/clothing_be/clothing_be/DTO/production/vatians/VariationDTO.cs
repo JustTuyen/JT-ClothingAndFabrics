@@ -12,7 +12,7 @@ namespace clothing_be.DTO.production.vatians
         public string StatusName { get; set; }
         public string? ImageURL { get; set; }
         public string? ProductName { get; set; }
-        public List<VariantAttributeValuesDTO> VariantAttributeList { get; set; } = new();
+        public List<VariantAttributeValuesDTO> VariantAttributes { get; set; } = new();
     }
 
     public class ListingVariationDTO
@@ -23,6 +23,7 @@ namespace clothing_be.DTO.production.vatians
         public string Sku { get; set; } = string.Empty;
         public string StatusName { get; set; }
         public string? ImageURL { get; set; }
+        public List<VariantAttributeValuesDTO> VariantAttributes { get; set; } = new();
     }
 
     public class CreateVariationDTO
@@ -33,12 +34,26 @@ namespace clothing_be.DTO.production.vatians
         public int StatusId { get; set; }
         public IFormFile? Image { get; set; }
         public int ProductId { get; set; }
+        public List<int> AttributeValueIds { get; set; } = new();
     }
+
+
+    public class UpdateVariationDTO
+    {
+        public decimal AddPrice { get; set; }
+        public int StockQuantity { get; set; }
+        public string Sku { get; set; } = string.Empty;
+        public int StatusId { get; set; }
+        public IFormFile? Image { get; set; }
+        public int ProductId { get; set; }
+        public List<int> AttributeValueIds { get; set; } = new();
+    }
+
+
     public class VariantAttributeValuesDTO 
     {
         public int Id { get; set; }
-        public int AttributeValueId { get; set; }
-        public int VariationId { get; set; }
+        public string AttributeValues { get; set; }
     }
 
 

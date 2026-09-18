@@ -11,7 +11,7 @@
 
         public string CategoryName { get; set; }
         public string StatusName { get; set; }
-        public List<MiniroductDTO> Products { get; set; } = new();
+        public List<MiniProductDTO> Products { get; set; } = new();
     }
 
     public class ListingSubCategoryDTO
@@ -20,7 +20,7 @@
         public string Name { get; set; } = string.Empty;
         public string Slug { get; set; } = string.Empty;
         public string StatusName { get; set; } = string.Empty;
-        public List<MiniroductDTO> Products { get; set; } = new();
+        public List<MiniProductDTO> Products { get; set; } = new();
     }
 
     

@@ -30,12 +30,13 @@ namespace clothing_be.DTO.production
         public List<MiniProductTagDTO> Tags { get; set; } = new();
     }
 
-    public class MiniroductDTO
+    public class MiniProductDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public decimal BasePrice { get; set; }
         public string StatusName { get; set; }
+        public string ImageURL { get; set; }
 
     }
     public class CreateProductDTO
@@ -50,6 +51,10 @@ namespace clothing_be.DTO.production
 
     }
 
+    public class UpdateTagProductDTO
+    {
+        public List<int> TagIds { get; set; } = new();
+    }
 
     public class UpdateProductDTO
     {
@@ -60,5 +65,24 @@ namespace clothing_be.DTO.production
         public int SubCategoryId { get; set; }
         public List<IFormFile> Images { get; set; } = new();
         public List<int> TagIds { get; set; } = new();
+        public List<int> VariationsId { get; set; } = new();
+    }
+
+    public class ProductFilterDTO
+    {
+        public decimal? MinPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
+
+        public DateTime? CreatedFrom { get; set; }
+        public DateTime? CreatedTo { get; set; }
+
+        public int? MinViewCount { get; set; }
+
+        // "CreatedAt" , "ViewCount" , "Price"
+        public string? SortBy { get; set; } = "CreatedAt";  
+        public bool SortDescending { get; set; } = true;
+
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 20;
     }
 }

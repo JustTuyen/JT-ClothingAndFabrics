@@ -1,5 +1,6 @@
 using clothing_be.Data;
 using clothing_be.DTO.core;
+using clothing_be.DTO.production;
 using clothing_be.DTO.production.category;
 using clothing_be.Models.productions;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,8 @@ public class SubCategoryModelsController : ControllerBase
     public async Task<ActionResult<IEnumerable<SubCategoryModel>>> GetAllSubCategories()
     {
         var subs = await _context.SubCategories
+            .Include(x => x.Products)
+                .ThenInclude(xx => xx.Status)
             .Include(x => x.Category)
             .Include(x => x.Status)
             .OrderBy(x => x.CreatedAt)
@@ -31,7 +34,18 @@ public class SubCategoryModelsController : ControllerBase
             Id = sub.Id,
             Name = sub.Name,
             Slug = sub.Slug,
-            //Category = sub.Category.Name,
+            StatusName = sub.Status?.Type,
+            Products = sub.Products
+                .OrderBy(x => x.ViewCount)
+                .Select(x => new MiniProductDTO
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    BasePrice = x.BasePrice,
+                    StatusName = x.Status.Name
+
+                }).ToList()
+
         }).ToList();
 
         return Ok(dto);
@@ -39,24 +53,48 @@ public class SubCategoryModelsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task <ActionResult<IEnumerable<SubCategoryModel>>> GetSubCategory(int id)
+    public async Task <ActionResult<SubCategoryModel>> GetSubCategory(int id)
     {
         var sub = await _context.SubCategories
             .Include(x => x.Category)
-            .Where(c => c.Status!.Type == "Category" && c.Status!.Name == "Active")
+            .Include(x => x.Status)
+            .Include(x => x.Products)
+                .ThenInclude(x => x.Status)
             .FirstOrDefaultAsync(x => x.Id == id);
 
-        return Ok(sub);
+        var dto = new SubCategoryDTO
+        {
+            Id = id,
+            Name = sub.Name,
+            Description = sub.Description,
+            Slug = sub.Slug,
+            StatusName = sub.Status.Name,
+            CategoryName = sub.Category.Name,
+            CreatedAt = sub.CreatedAt,
+            UpdatedAt = sub.UpdatedAt,
+            Products = sub.Products
+                .OrderBy(x => x.ViewCount)
+                .Select(x => new MiniProductDTO
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    BasePrice = x.BasePrice,
+                    StatusName = x.Status.Name
+
+                }).ToList()
+        };
+
+        return Ok(dto);
     }
 
     [HttpPost]
-    public async Task <ActionResult<SubCategoryModel>> CreateSubCategory([FromBody] CreateSubCategoryDTO dto)
+    public async Task <ActionResult<SubCategoryModel>> CreateSubCategory([FromForm] CreateSubCategoryDTO dto)
     {
         if (dto == null) return BadRequest("Dto or request data is missing");
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var cat = await _context.Categories
-            .Where(c => c.Status!.Type == "Category" && c.Status!.Name == "Active")
+            .Where(c => c.Status!.Type == "Categories" && c.Status!.Name == "Active")
             .FirstOrDefaultAsync(c => c.Id == dto.CategoryId);
         if (cat == null) return BadRequest("the category is either not exist or not active");
 
@@ -65,9 +103,24 @@ public class SubCategoryModelsController : ControllerBase
 
         if (status == null)
             return BadRequest("Status không tồn tại.");
+        if (status.Type != "SubCategories")
+            return BadRequest("Status is not for SubCategory!");
+        if (status.Name != "Active") 
+            return BadRequest("Status is not active!");
 
-        if (status.Type != "SubCategory" || status.Name != "Active")
-            return BadRequest("Status is either not for SubCategory or not active!");
+        var newProducts = new List<ProductModel>();
+        if (dto.ProductIds.Any())
+        {
+            newProducts = await _context.Products
+                .Where(x => dto.ProductIds.Contains(x.Id))
+                .ToListAsync();
+
+            var missingIds = dto.ProductIds.Except(newProducts.Select(s => s.Id)).ToList();
+            if (missingIds.Any())
+            {
+                return BadRequest($"Các Product sau không tồn tại: {string.Join(", ", missingIds)}");
+            }
+        }
 
         var sub = new SubCategoryModel
         {
@@ -77,10 +130,17 @@ public class SubCategoryModelsController : ControllerBase
             UpdatedAt = DateTime.UtcNow,
             Slug = dto.Slug,
             StatusId = dto.StatusId,
-            CategoryId = dto.CategoryId
+            CategoryId = dto.CategoryId,
+            Products = newProducts
         };
 
         _context.SubCategories.Add(sub);
+        await _context.SaveChangesAsync();
+
+        foreach (var pro in newProducts)
+        {
+            pro.SubCategoryId = sub.Id;
+        }
         await _context.SaveChangesAsync();
 
         var resultDto = new SubCategoryDTO
@@ -88,13 +148,15 @@ public class SubCategoryModelsController : ControllerBase
             Id = sub.Id,
             Name = sub.Name,
             Description = sub.Description,
+            CategoryName = sub.Category?.Name,
+            StatusName = sub.Status?.Name,
         };
 
         return CreatedAtAction(nameof(GetSubCategory), new { id = sub.Id }, resultDto);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<SubCategoryModel>> PutSubCategory(int id, [FromBody] UpdateSubCategoryDTO dto)
+    public async Task<ActionResult<SubCategoryModel>> PutSubCategory(int id, [FromForm] UpdateSubCategoryDTO dto)
     {
         if (dto == null) return BadRequest("Dto is null or missing");
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -105,9 +167,9 @@ public class SubCategoryModelsController : ControllerBase
         if (sub == null) return NotFound();
 
         var cat = await _context.Categories
-            .Where(c => c.Status!.Type == "Category" && c.Status!.Name == "Active")
+            .Where(c => c.Status!.Type == "Categories" && c.Status!.Name == "Active")
             .FirstOrDefaultAsync(c => c.Id == dto.CategoryId);
-        if (cat == null) return BadRequest("the category is either not exist or not active");
+        if (cat == null) return BadRequest("the Category is either not exist or not active");
 
         var status = await _context.Statuses
             .FirstOrDefaultAsync(s => s.Id == dto.StatusId);
@@ -115,8 +177,22 @@ public class SubCategoryModelsController : ControllerBase
         if (status == null)
             return BadRequest("Status không tồn tại.");
 
-        if (status.Type != "SubCategories")
-            return BadRequest("Status is either not for subCategory or not active!");
+        if (status.Name != "Active") { return BadRequest("wrong status name or type"); }
+        if (status.Type != "SubCategories") { return BadRequest("wrong status type"); }
+
+        var newProducts = new List<ProductModel>();
+        if (dto.ProductIds.Any())
+        {
+            newProducts = await _context.Products
+                .Where(x => dto.ProductIds.Contains(x.Id))
+                .ToListAsync();
+
+            var missingIds = dto.ProductIds.Except(newProducts.Select(s => s.Id)).ToList();
+            if (missingIds.Any())
+            {
+                return BadRequest($"Các Product sau không tồn tại: {string.Join(", ", missingIds)}");
+            }
+        }
 
         sub.Name = dto.Name;
         sub.Description = dto.Description;
@@ -124,8 +200,14 @@ public class SubCategoryModelsController : ControllerBase
         sub.StatusId = dto.StatusId;
         sub.CategoryId = dto.CategoryId;
         sub.UpdatedAt = DateTime.UtcNow;
+        sub.Products = newProducts;
 
+        foreach (var pro in newProducts)
+        {
+            pro.SubCategoryId = sub.Id;
+        }
         await _context.SaveChangesAsync();
+
 
         var updatedSub = await _context.SubCategories
             .FirstOrDefaultAsync(c => c.Id == id);
@@ -136,7 +218,8 @@ public class SubCategoryModelsController : ControllerBase
             Name = updatedSub.Name,
             Slug = updatedSub.Slug,
             Description = updatedSub.Description,
-            CategoryId = dto.CategoryId,
+            CategoryName = updatedSub.Category?.Name,
+            StatusName = updatedSub.Status?.Name,
         };
 
         return Ok(updatedto);

@@ -29,8 +29,8 @@ public class AttributeValuesModelsController : ControllerBase
         {
             Id = attrvalue.Id,
             Value = attrvalue.Value,
-            AttriName = attrvalue.Attribute.Name,
-            AttriType = attrvalue.Attribute.Type
+            AttriName = attrvalue.Attribute?.Name,
+            AttriType = attrvalue.Attribute?.Type
         });
 
         return Ok(dto);
@@ -49,8 +49,8 @@ public class AttributeValuesModelsController : ControllerBase
         {
             Id = attrvalue.Id,
             Value = attrvalue.Value,
-            AttriName = attrvalue.Attribute.Name,
-            AttriType = attrvalue.Attribute.Type
+            AttriName = attrvalue.Attribute?.Name,
+            AttriType = attrvalue.Attribute?.Type
         };
 
         return Ok(dto);
@@ -82,11 +82,35 @@ public class AttributeValuesModelsController : ControllerBase
         {
             Id = value.Id,
             Value = value.Value,
-            AttriName = value.Attribute.Name,
-            AttriType = value.Attribute.Type
+            AttriName = value.Attribute?.Name,
+            AttriType = value.Attribute?.Type
 
         };
         return CreatedAtAction(nameof(GetById), new { id = value.Id }, resultDto);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<AttributeModel>> DeleteAttribute(int id)
+    {
+        var var = await _context.Attributes
+            .FirstOrDefaultAsync(va => va.Id == id);
+
+        if (var == null) { return BadRequest("Attributes with this id cant found"); }
+        _context.Attributes.Remove(var);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpDelete("{attributeId}/Values/{valueId}")]
+    public async Task<IActionResult> DeleteAttributeValue(int attributeId, int valueId)
+    {
+        var val = await _context.AttributeValues.FirstOrDefaultAsync(v => v.Id == valueId && v.AttributeId == attributeId);
+        if (val == null) return NotFound();
+
+        _context.AttributeValues.Remove(val);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 
 }

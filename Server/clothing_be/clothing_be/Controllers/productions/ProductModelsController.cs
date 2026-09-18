@@ -8,9 +8,12 @@ using clothing_be.DTO.production.vatians;
 using clothing_be.Models.Others;
 using clothing_be.Models.productions;
 using clothing_be.Models.productions.Tagging;
+using clothing_be.Models.productions.Varied;
 using clothing_be.Services.Media;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp.ColorProfiles;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -31,6 +34,13 @@ public class ProductModelsController : ControllerBase
     public async Task <ActionResult<IEnumerable<ProductDTO>>> GetAll()
     {
         var products = await _context.Products
+            .Include(p => p.Variations)
+                .ThenInclude(pp => pp.Image)
+            .Include(p => p.Variations)
+                .ThenInclude(pp => pp.Status)
+            .Include(p => p.Variations)
+                .ThenInclude(pp => pp.VariantAttributeValues)
+                    .ThenInclude(pp => pp.AttributeValue)
             .Include(p => p.Status)
             .Include(p => p.Discount)
             .Include(p => p.ImageGalleries)
@@ -66,7 +76,13 @@ public class ProductModelsController : ControllerBase
                     StockQuantity = pv.StockQuantity,
                     AddPrice = pv.AddPrice,
                     StatusName = pv.Status?.Name,
-                    ImageURL = pv.Image?.URL
+                    ImageURL = pv.Image?.URL,
+                    VariantAttributes = pv.VariantAttributeValues
+                        .Select(c => new VariantAttributeValuesDTO
+                        {
+                            Id = c.Id,
+                            AttributeValues = c.AttributeValue.Value
+                        }).ToList()
 
                 }).ToList(),
             Tags = product.ProductTags
@@ -88,6 +104,13 @@ public class ProductModelsController : ControllerBase
     public async Task<ActionResult<ProductDTO>> GetById(int id)
     {
         var product = await _context.Products
+            .Include(p => p.Variations)
+                .ThenInclude(pp => pp.Image)
+            .Include(p => p.Variations)
+                .ThenInclude(pp => pp.Status)
+            .Include(p => p.Variations)
+                .ThenInclude(pp => pp.VariantAttributeValues)
+                    .ThenInclude(pp => pp.AttributeValue)
             .Include(p => p.Status)
             .Include(p => p.Discount)
             .Include(p => p.ImageGalleries)
@@ -248,6 +271,7 @@ public class ProductModelsController : ControllerBase
         if (subcat.Status == null || subcat.Status.Type != "SubCategories") { return BadRequest("This subcategories is not for product"); }
 
         var pro = await _context.Products
+            //.Include(p =>  p.Variations)
             .Include(p => p.ProductTags)
             .Include(p => p.ImageGalleries)
                 .ThenInclude(ig => ig.Image)
@@ -306,6 +330,20 @@ public class ProductModelsController : ControllerBase
             pro.ProductTags = existingTags.Select(tag => new ProductTagModel { TagId = tag.Id }).ToList();
         }
 
+        //if (dto.VariationsId != null)
+        //{
+        //    var existingVariants = await _context.Variations
+        //        .Where(v => dto.VariationsId.Contains(v.Id))
+        //        .ToListAsync();
+
+        //    var missingVariantIds = dto.VariationsId.Except(existingVariants.Select(t => t.Id)).ToList();
+        //    if (missingVariantIds.Any())
+        //        return BadRequest($"Invalid VariantID: {string.Join(", ", missingVariantIds)}");
+
+        //    pro.Variations.Clear();
+        //    pro.Variations = existingVariants.Select(Variation => new VariationModel { ProductId = pro.Id }).ToList();
+        //}
+
         pro.Name = dto.Name;
         pro.Description = dto.Description;
         pro.BasePrice = dto.BasePrice;
@@ -328,4 +366,129 @@ public class ProductModelsController : ControllerBase
 
         return Ok(resultdto);
     }
+
+    [HttpGet("/keyword")]
+    public async Task<ActionResult<IEnumerable<MiniProductDTO>>> SearchByKeyWord([FromQuery] string keyword)
+    {
+        if (string.IsNullOrEmpty(keyword))
+        {
+            return BadRequest("keyword = null");
+        }
+
+        var pros = await _context.Products
+            .Where(p => EF.Functions.ILike(p.Name, $"%{keyword}%"))
+            .Include(p => p.Status)
+            .Include(p => p.ImageGalleries)
+                .ThenInclude(pp => pp.Image)
+            .ToListAsync();
+
+        var dto = pros.Select(pro => new MiniProductDTO
+        {
+            Id = pro.Id,
+            Name = pro.Name,
+            StatusName = pro.Status?.Name,
+            ImageURL = pro.ImageGalleries
+                .Where(i => i.DisplayOrder == 0)
+                .Select(i => i.Image!.URL)
+                .FirstOrDefault()
+               
+        }).ToList();
+
+        return Ok(dto);
+    }
+
+    [HttpPut("{id}/tags")]
+    public async Task<ActionResult<UpdateTagProductDTO>> UpdateTheTag(int id, [FromForm] UpdateTagProductDTO dto)
+    {
+        var pro = await _context.Products.FirstOrDefaultAsync(o => o.Id == id);
+        if (pro == null) { return BadRequest("This Product is missing or doesnt exist!"); }
+
+        if (dto.TagIds != null && dto.TagIds.Any())
+        {
+            var existingTags = await _context.Tags
+                .Where(t => dto.TagIds.Contains(t.Id))
+                .ToListAsync();
+
+            var missingTagIds = dto.TagIds.Except(existingTags.Select(t => t.Id)).ToList();
+            if (missingTagIds.Any())
+                return BadRequest($"Invalid TagIDs: {string.Join(", ", missingTagIds)}");
+
+            pro.ProductTags.Clear();
+            pro.ProductTags = existingTags.Select(tag => new ProductTagModel { TagId = tag.Id }).ToList();
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { mes = "tag updated!" });
+    }
+
+    [HttpGet("filter")]
+    public async Task <ActionResult<IEnumerable<MiniProductDTO>>> FilterProducts([FromQuery] ProductFilterDTO filter)
+    {
+        var query = _context.Products.AsQueryable();
+
+        query = query.Where(p => p.Status!.Name == "Active");
+
+        if (filter.MinPrice.HasValue)
+        {
+            query = query.Where(p => p.BasePrice >= filter.MinPrice);
+        }
+
+        if (filter.MaxPrice.HasValue)
+        {
+            query = query.Where(p => p.BasePrice <= filter.MaxPrice);
+        }
+
+        if (filter.CreatedFrom.HasValue)
+        {
+            query = query.Where(p => p.CreatedAt >= filter.CreatedFrom);
+        }
+
+        if (filter.CreatedTo.HasValue)
+        {
+            query = query.Where(p => p.CreatedAt <= filter.CreatedTo);
+        }
+
+        if (filter.MinViewCount.HasValue)
+        {
+            query = query.Where(p => p.ViewCount >= filter.MinViewCount);
+        }
+
+        query = filter.SortBy?.ToLower() switch
+        {
+            "viewcount" => filter.SortDescending
+                ? query.OrderByDescending(p => p.ViewCount)
+                : query.OrderBy(p => p.ViewCount),
+
+            "price" => filter.SortDescending
+                ? query.OrderByDescending(p => p.BasePrice)
+                : query.OrderBy(p => p.BasePrice),
+
+            _ => filter.SortDescending
+                ? query.OrderByDescending(p => p.CreatedAt)
+                : query.OrderBy(p => p.CreatedAt)
+        };
+
+        var totalCount = await query.CountAsync();
+        var pros = await query.Skip((filter.Page - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .Select(p => new MiniProductDTO
+            {
+                Id = p.Id,
+                BasePrice = p.BasePrice,
+                Name = p.Name,
+                StatusName = p.Status != null ? p.Status.Name : null,
+                ImageURL = p.ImageGalleries
+                .Where(ig => ig.DisplayOrder == 0)
+                .Select(ig => ig.Image!.URL)
+                .FirstOrDefault()
+
+            }).ToListAsync();
+
+        Response.Headers.Append("X-Total-Count", totalCount.ToString());
+        return Ok(pros);
+
+    }
+
+
 }

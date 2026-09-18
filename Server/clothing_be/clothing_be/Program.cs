@@ -22,7 +22,8 @@ builder.Services.AddCors(options =>
 //DB
 var connectionString = builder.Configuration.GetConnectionString("cnn");
 builder.Services.AddDbContext<MyDbContextApplication>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString).LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging()
+);
 
 //S3
 
@@ -78,7 +79,8 @@ app.MapControllers();
 app.UseAuthorization();
 //
 //app.UseHsts();
-
+app.UseMiddleware<ExceptionMiddleware>();
+//
 app.MapStaticAssets();
 
 app.MapControllerRoute(

@@ -31,7 +31,7 @@ public class TagModelsController : ControllerBase
         {
             Id = tag.Id,
             Name = tag.Name,
-            Status = tag.Status.Name
+            Statusname = tag.Status.Name
         }).ToList();
 
         return Ok(dto);
@@ -44,9 +44,15 @@ public class TagModelsController : ControllerBase
             .Include(t => t.Status)
             .FirstOrDefaultAsync(i => i.Id == id);
 
-        if(tag == null) { return NotFound(); }
+        if (tag == null) { return NotFound(); }
+        var dto = new TagDTO
+        {
+            Id = tag.Id,
+            Name = tag.Name,
+            Statusname = tag.Status?.Name
+        };
 
-        return Ok(tag);
+        return Ok(dto);
     }
 
     [HttpPost]
@@ -62,8 +68,10 @@ public class TagModelsController : ControllerBase
         if (status == null)
             return BadRequest("Status không tồn tại.");
 
-        if (status.Type != "Tag" || status.Name != "Active")
-            return BadRequest("Status is either not for tag or not active!");
+        var sta = await _context.Statuses.FirstOrDefaultAsync(c => c.Id == dto.StatusId);
+        if (sta == null) { return BadRequest("Status is not found"); }
+        if (sta.Name != "Active") { return BadRequest("wrong status name or type"); }
+        if (sta.Type != "Tags") { return BadRequest("wrong status type"); }
 
         var tag = new TagModel
         {
@@ -80,9 +88,51 @@ public class TagModelsController : ControllerBase
         {
             Id = tag.Id,
             Name = tag.Name,
-            Status = tag.Status.Name
-         
-        }; 
+            Statusname = tag.Status?.Name
+
+        };
         return CreatedAtAction(nameof(GetById), new { id = tag.Id }, resultDto);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<StatusModel>> DeleteStatus(int id)
+    {
+        var status = await _context.Statuses.FirstOrDefaultAsync(x => x.Id == id);
+
+        if (status == null) { return BadRequest("Cant find a Status with this id"); }
+        _context.Statuses.Remove(status);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<UpdateTagDTO>> UpdateTag(int id, [FromBody] UpdateTagDTO dto)
+    {
+        if (dto == null) return BadRequest("Dto or request data is missing");
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var tag = await _context.Tags.Include(tg => tg.Status).FirstOrDefaultAsync(tg => tg.Id == id);
+        if (tag == null) { return BadRequest("Cant find tag with this is id"); }
+
+        var sta = await _context.Statuses.FirstOrDefaultAsync(x => x.Id == dto.StatusId);
+        if (sta == null) { return BadRequest("Cant find status with this is id"); }
+        if (sta.Type != "Tags") { return BadRequest("This status is not for tag"); }
+
+        tag.Name = dto.Name;
+        tag.StatusId = dto.StatusId;
+        tag.UpdatedAt = DateTime.UtcNow;
+
+        var resultdto = new TagDTO
+        {
+            Id = tag.Id,
+            Name = tag.Name,
+            Statusname = tag.Status.Name,
+
+        };
+
+        await _context.SaveChangesAsync();
+        return Ok(resultdto);
+    }
+
+    
 }
