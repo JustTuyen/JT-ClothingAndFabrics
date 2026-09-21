@@ -16,9 +16,12 @@ namespace clothing_be.Data
     public class MyDbContextApplication : DbContext
     {
         //public MyDbContextApplication() { }
+        
+        //public MyDbContextApplication() { }
         public MyDbContextApplication(DbContextOptions<MyDbContextApplication> options) : base(options) { }
         #region
         //products
+        public DbSet<BannerModel> Banners { get; set; }
         public DbSet<ImageModel> Images { get; set; }
         public DbSet<ImageGalleryModel> ImageGalleries { get; set; }
         public DbSet<DiscountModel> Discounts { get; set; }
@@ -103,6 +106,7 @@ namespace clothing_be.Data
                 .WithMany(c => c.ImageGalleries)
                 .HasForeignKey(c => c.ImageId)
                 .OnDelete(DeleteBehavior.Restrict);
+
 
             modelBuilder.Entity<ImageGalleryModel>()
                 .HasOne(c => c.Product)
@@ -318,6 +322,18 @@ namespace clothing_be.Data
                 .WithMany(r => r.InvoiceItems)
                 .HasForeignKey(r => r.VariationId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //Banner
+            modelBuilder.Entity<BannerModel>()
+               .HasIndex(g => new { g.Id, g.ImageId })
+               .IsUnique();
+            
+            modelBuilder.Entity<BannerModel>()
+                .HasOne(r => r.Image)
+                .WithMany()
+                .HasForeignKey(r => r.ImageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     
     }

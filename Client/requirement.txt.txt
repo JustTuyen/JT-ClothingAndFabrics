@@ -1,3 +1,6 @@
 React router
 tailwind
 tailwind MUI
+react-slick
+
+axios
