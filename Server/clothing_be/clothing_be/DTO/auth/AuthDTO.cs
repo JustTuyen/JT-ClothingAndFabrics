@@ -1,4 +1,6 @@
-﻿namespace clothing_be.DTO.auth
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace clothing_be.DTO.auth
 {
     public class LoginDTO
     {
@@ -24,6 +26,16 @@
         public string PhoneNumber { get; set; }
         public string Gender { get; set; }
         public DateTime? BirthDay { get; set; }
+
+    }
+
+    public class UpdatePasswordDTO
+    {
+        [Required]
+        public string CurrentPassword { get; set; } = string.Empty;
+
+        [Required]
+        public string NewPassword { get; set; } = string.Empty;
 
     }
 
