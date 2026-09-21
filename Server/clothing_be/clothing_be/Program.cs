@@ -3,8 +3,11 @@ using Amazon.Runtime;
 using Amazon.S3;
 using clothing_be.Data;
 using clothing_be.Services.Media;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +41,32 @@ var s3Config = new AmazonS3Config
 
 builder.Services.AddSingleton<IAmazonS3>(new AmazonS3Client(credentials, s3Config));
 builder.Services.AddScoped<IImageUploadService, S3ImageUploadService>();
+
+//
+//var jwtSetting = builder.Configuration.GetSection("jwt");
+//var key = jwtSetting["SecretKey"];
+//builder.Services.AddAuthentication(
+//   options =>
+//   {
+//       options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//       options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//   }
+//).AddJwtBearer(options =>
+//{
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = true,
+//        ValidateAudience = true,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//        ValidIssuer = jwtSetting["Issuer"],
+//        ValidAudience = jwtSetting["Audience"],
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+//    };
+//});
+
+
+
 
 //builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 //builder.Services.AddAWSService<IAmazonS3>();
