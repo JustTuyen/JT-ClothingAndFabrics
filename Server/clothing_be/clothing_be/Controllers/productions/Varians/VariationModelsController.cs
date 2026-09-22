@@ -199,12 +199,10 @@ public class VariationModelsController : ControllerBase
         var pro = await _context.Products.Include(c => c.Status).FirstOrDefaultAsync(c => c.Id == dto.ProductId);
         if (pro == null) { return BadRequest("Product is not found"); }
 
+        var status = await _context.Statuses.Where(st => st.Name == "Active" && st.Type == "Variations").FirstOrDefaultAsync();
+        if (status == null) { return BadRequest("Status is not found"); }
 
-        var sta = await _context.Statuses.FirstOrDefaultAsync(c => c.Id == dto.StatusId);
-        if (sta == null) { return BadRequest("Status is not found"); }
-        if (sta.Name != "Active") { return BadRequest("wrong status name or type"); }
-        if (sta.Type != "variations") { return BadRequest("wrong status type"); }
-
+     
         var AttributeValues = new List<VariantAttributeValuesModel>();
         if(dto.AttributeValueIds!=null && dto.AttributeValueIds.Any())
         {
@@ -224,7 +222,7 @@ public class VariationModelsController : ControllerBase
             AddPrice = dto.AddPrice,
             StockQuantity = dto.StockQuantity,
             Sku = dto.Sku,
-            StatusId = dto.StatusId,
+            StatusId = status.Id,
             ProductId = dto.ProductId,
             Image = image,
             VariantAttributeValues = AttributeValues,
@@ -240,7 +238,7 @@ public class VariationModelsController : ControllerBase
             Id = varian.Id,
             Sku = varian.Sku,
             AddPrice = varian.AddPrice,
-            StatusName = sta.Name,
+            StatusName = status.Name,
             ProductName = pro.Name,
             ImageURL = image?.URL,
         };

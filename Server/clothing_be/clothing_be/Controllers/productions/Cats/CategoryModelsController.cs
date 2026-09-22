@@ -143,25 +143,27 @@ public class CategoryModelsController : ControllerBase
         if (dto == null) return BadRequest("Dto or request data is missing");
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var sta = await _context.Statuses.FirstOrDefaultAsync(c => c.Id == dto.StatusId);
-        if (sta == null) { return BadRequest("Status is not found"); }
-        if (sta.Name != "Active") { return BadRequest("wrong status name or type"); }
-        if (sta.Type != "Categories") { return BadRequest("wrong status type"); }
+        var status = await _context.Statuses.Where(st => st.Name == "Active" && st.Type == "Categories").FirstOrDefaultAsync();
+        if (status == null) { return BadRequest("Status is not found"); }
+        //var sta = await _context.Statuses.FirstOrDefaultAsync(c => c.Id == dto.StatusId);
+        //if (sta == null) { return BadRequest("Status is not found"); }
+        //if (sta.Name != "Active") { return BadRequest("wrong status name or type"); }
+        //if (sta.Type != "Categories") { return BadRequest("wrong status type"); }
 
         //subcategories
-        var newSubCats = new List<SubCategoryModel>();
-        if (dto.SubCategoryIds.Any())
-        {
-            newSubCats = await _context.SubCategories
-                .Where(sx => dto.SubCategoryIds.Contains(sx.Id))
-                .ToListAsync();
+        //var newSubCats = new List<SubCategoryModel>();
+        //if (dto.SubCategoryIds.Any())
+        //{
+        //    newSubCats = await _context.SubCategories
+        //        .Where(sx => dto.SubCategoryIds.Contains(sx.Id))
+        //        .ToListAsync();
 
-            var missingIds = dto.SubCategoryIds.Except(newSubCats.Select(sx => sx.Id)).ToList();
-            if (missingIds.Any())
-            {
-                return BadRequest($"Các SubCategory sau không tồn tại: {string.Join(", ", missingIds)}");
-            }
-        }
+        //    var missingIds = dto.SubCategoryIds.Except(newSubCats.Select(sx => sx.Id)).ToList();
+        //    if (missingIds.Any())
+        //    {
+        //        return BadRequest($"Các SubCategory sau không tồn tại: {string.Join(", ", missingIds)}");
+        //    }
+        //}
 
 
         ImageModel? image = null;
@@ -189,18 +191,18 @@ public class CategoryModelsController : ControllerBase
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Image = image,
-            StatusId = dto.StatusId,
-            SubCategories = newSubCats
+            StatusId = status.Id,
+            //SubCategories = newSubCats
         };
 
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();
 
-        foreach (var sub in newSubCats)
-        {
-            sub.CategoryId = category.Id;
-        }
-        await _context.SaveChangesAsync();
+        //foreach (var sub in newSubCats)
+        //{
+        //    sub.CategoryId = category.Id;
+        //}
+        //await _context.SaveChangesAsync();
 
         var catdto = new CardCategoryDTO
         {

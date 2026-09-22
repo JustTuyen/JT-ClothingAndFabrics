@@ -61,22 +61,13 @@ public class TagModelsController : ControllerBase
         if (dto == null) return BadRequest("Dto or request data is missing");
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-
-        var status = await _context.Statuses
-            .FirstOrDefaultAsync(s => s.Id == dto.StatusId);
-
-        if (status == null)
-            return BadRequest("Status không tồn tại.");
-
-        var sta = await _context.Statuses.FirstOrDefaultAsync(c => c.Id == dto.StatusId);
-        if (sta == null) { return BadRequest("Status is not found"); }
-        if (sta.Name != "Active") { return BadRequest("wrong status name or type"); }
-        if (sta.Type != "Tags") { return BadRequest("wrong status type"); }
+        var status = await _context.Statuses.Where(st => st.Name == "Active" && st.Type == "Tags").FirstOrDefaultAsync();
+        if (status == null) { return BadRequest("Status is not found"); }
 
         var tag = new TagModel
         {
             Name = dto.Name,
-            StatusId = dto.StatusId,
+            StatusId = status.Id,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

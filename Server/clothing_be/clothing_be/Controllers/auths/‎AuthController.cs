@@ -87,6 +87,40 @@ namespace clothing_be.Controllers.auths
             });
         }
 
+        [HttpPut("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromForm] UpdatePasswordDTO request)
+        {
+            if (request == null) return BadRequest("Dto or request data is missing");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+
+            var userid = User.FindFirst("userId")?.Value;
+            if (!int.TryParse(userid, out int currentId))
+            {
+                return Unauthorized("UserId is not wrong or not found!");
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == currentId);
+            if (user == null) return NotFound("User không tồn tại.");
+
+            if (!VerifyPassword(request.CurrentPassword, user.Password))
+                return BadRequest("Mật khẩu hiện tại không đúng.");
+
+            if (VerifyPassword(request.NewPassword, user.Password))
+                return BadRequest("Mật khẩu mới không được trùng với mật khẩu cũ.");
+
+            string hashedPsswd = HashPassword(request.NewPassword);
+            user.Password = hashedPsswd;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+            
+
+        }
+        
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()
 
@@ -157,8 +191,10 @@ namespace clothing_be.Controllers.auths
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             if (await _context.Users.AnyAsync(u => u.Email == request.Email)) { return BadRequest("email already used"); }
-            
 
+            var status = await _context.Statuses.Where(i => i.Type == "Users" && i.Name == "Active").FirstOrDefaultAsync();
+            if (status == null) return BadRequest("Status for user is not foudn???");
+            
             string hashedPsswd = HashPassword(request.Password);
             var user = new UserModel
             {
@@ -168,6 +204,8 @@ namespace clothing_be.Controllers.auths
                 Password = hashedPsswd,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
+                StatusId = status.Id
+                
             };
 
             _context.Users.Add(user);

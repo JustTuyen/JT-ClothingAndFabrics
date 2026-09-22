@@ -98,29 +98,32 @@ public class SubCategoryModelsController : ControllerBase
             .FirstOrDefaultAsync(c => c.Id == dto.CategoryId);
         if (cat == null) return BadRequest("the category is either not exist or not active");
 
-        var status = await _context.Statuses
-            .FirstOrDefaultAsync(s => s.Id == dto.StatusId);
+        var status = await _context.Statuses.Where(st => st.Name == "Active" && st.Type == "SubCategories").FirstOrDefaultAsync();
+        if (status == null) { return BadRequest("Status is not found"); }
 
-        if (status == null)
-            return BadRequest("Status không tồn tại.");
-        if (status.Type != "SubCategories")
-            return BadRequest("Status is not for SubCategory!");
-        if (status.Name != "Active") 
-            return BadRequest("Status is not active!");
+        //var status = await _context.Statuses
+        //    .FirstOrDefaultAsync(s => s.Id == dto.StatusId);
 
-        var newProducts = new List<ProductModel>();
-        if (dto.ProductIds.Any())
-        {
-            newProducts = await _context.Products
-                .Where(x => dto.ProductIds.Contains(x.Id))
-                .ToListAsync();
+        //if (status == null)
+        //    return BadRequest("Status không tồn tại.");
+        //if (status.Type != "SubCategories")
+        //    return BadRequest("Status is not for SubCategory!");
+        //if (status.Name != "Active") 
+        //    return BadRequest("Status is not active!");
 
-            var missingIds = dto.ProductIds.Except(newProducts.Select(s => s.Id)).ToList();
-            if (missingIds.Any())
-            {
-                return BadRequest($"Các Product sau không tồn tại: {string.Join(", ", missingIds)}");
-            }
-        }
+        //var newProducts = new List<ProductModel>();
+        //if (dto.ProductIds.Any())
+        //{
+        //    newProducts = await _context.Products
+        //        .Where(x => dto.ProductIds.Contains(x.Id))
+        //        .ToListAsync();
+
+        //    var missingIds = dto.ProductIds.Except(newProducts.Select(s => s.Id)).ToList();
+        //    if (missingIds.Any())
+        //    {
+        //        return BadRequest($"Các Product sau không tồn tại: {string.Join(", ", missingIds)}");
+        //    }
+        //}
 
         var sub = new SubCategoryModel
         {
@@ -129,19 +132,19 @@ public class SubCategoryModelsController : ControllerBase
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Slug = dto.Slug,
-            StatusId = dto.StatusId,
+            StatusId = status.Id,
             CategoryId = dto.CategoryId,
-            Products = newProducts
+            //Products = newProducts
         };
 
         _context.SubCategories.Add(sub);
         await _context.SaveChangesAsync();
 
-        foreach (var pro in newProducts)
-        {
-            pro.SubCategoryId = sub.Id;
-        }
-        await _context.SaveChangesAsync();
+        //foreach (var pro in newProducts)
+        //{
+        //    pro.SubCategoryId = sub.Id;
+        //}
+        //await _context.SaveChangesAsync();
 
         var resultDto = new SubCategoryDTO
         {

@@ -103,19 +103,19 @@ public class AttributeModelsController : ControllerBase
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         //attribute value
-        var newValues = new List<AttributeValuesModel>();
-        if (dto.AttributeValueIds.Any())
-        {
-            newValues = await _context.AttributeValues
-                .Where(s => dto.AttributeValueIds.Contains(s.Id))
-                .ToListAsync();
+        //var newValues = new List<AttributeValuesModel>();
+        //if (dto.AttributeValueIds.Any())
+        //{
+        //    newValues = await _context.AttributeValues
+        //        .Where(s => dto.AttributeValueIds.Contains(s.Id))
+        //        .ToListAsync();
 
-            var missingIds = dto.AttributeValueIds.Except(newValues.Select(sx => sx.Id)).ToList();
-            if (missingIds.Any())
-            {
-                return BadRequest($"Các Attribute Value sau không tồn tại: {string.Join(", ", missingIds)}");
-            }
-        }
+        //    var missingIds = dto.AttributeValueIds.Except(newValues.Select(sx => sx.Id)).ToList();
+        //    if (missingIds.Any())
+        //    {
+        //        return BadRequest($"Các Attribute Value sau không tồn tại: {string.Join(", ", missingIds)}");
+        //    }
+        //}
 
         var attr = new AttributeModel
         {
@@ -123,20 +123,11 @@ public class AttributeModelsController : ControllerBase
             Type = dto.Type,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
-            AttributeValues = newValues
+            //AttributeValues = newValues
         };
 
         _context.Attributes.Add(attr);
         await _context.SaveChangesAsync();
-
-        foreach(var va in newValues)
-        {
-            va.AttributeId = attr.Id;
-        }
-
-        await _context.SaveChangesAsync();
-           
-
         var resultdto = new AttributeDTO
         {
             Id = attr.Id,

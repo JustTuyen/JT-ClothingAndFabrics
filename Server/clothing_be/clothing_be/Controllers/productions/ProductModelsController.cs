@@ -55,6 +55,7 @@ public class ProductModelsController : ControllerBase
         {
             Id = product.Id,
             Name = product.Name,
+           
             BasePrice = product.BasePrice,
             DiscountPercentage = product.Discount?.Percentage,
             StatusName = product.Status?.Name,
@@ -126,6 +127,7 @@ public class ProductModelsController : ControllerBase
         {
             Id = product.Id,
             Name = product.Name,
+            Slug = product.Slug,
             Description = product.Description,
             BasePrice = product.BasePrice,
             DiscountPercentage = product.Discount?.Percentage,
@@ -152,12 +154,12 @@ public class ProductModelsController : ControllerBase
                     ImageURL = pv.Image?.URL
 
                 }).ToList(),
-            Tags = product.ProductTags
-                .Select(t => new MiniProductTagDTO
-                {
-                    Id = t.Id,
-                    TagName = t.Tag.Name
-                }).ToList()
+            //Tags = product.ProductTags
+            //    .Select(t => new MiniProductTagDTO
+            //    {
+            //        Id = t.Id,
+            //        TagName = t.Tag.Name
+            //    }).ToList()
         };
 
         return Ok(dto);
@@ -170,10 +172,8 @@ public class ProductModelsController : ControllerBase
         if (dto == null) return BadRequest("Dto or request data is missing");
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var sta = await _context.Statuses.FirstOrDefaultAsync(st => st.Id == dto.StatusId);
-        if(sta == null) { return BadRequest("This status is missing or doesnt exist!"); }
-        if (sta.Name != "Active") { return BadRequest("wrong status name or type"); }
-        if (sta.Type != "Products") { return BadRequest("wrong status type"); }
+        var status = await _context.Statuses.Where(st => st.Name == "Active" && st.Type == "Products").FirstOrDefaultAsync();
+        if (status == null) { return BadRequest("Status is not found"); }
 
         var subcat = await _context.SubCategories.Include(st=> st.Status).FirstOrDefaultAsync(st => st.Id == dto.SubCategoryId);
         if (subcat == null) { return BadRequest("This SubCategories is missing or doesnt exist!"); }
@@ -199,6 +199,7 @@ public class ProductModelsController : ControllerBase
                     Type = img.ContentType,
                     CreatedAt = DateTime.UtcNow,
                     IsThumbnail = displayOrder == 0,
+                   
                 };
 
                 imageGalleries.Add(new ImageGalleryModel
@@ -232,11 +233,12 @@ public class ProductModelsController : ControllerBase
             Description = dto.Description,
             BasePrice = dto.BasePrice,
             SubCategoryId = dto.SubCategoryId,
-            StatusId = dto.StatusId,
+            StatusId = status.Id,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             ImageGalleries = imageGalleries,
-            ProductTags = productTags
+            ProductTags = productTags,
+            Slug = dto.Slug
         };
 
        
@@ -350,6 +352,7 @@ public class ProductModelsController : ControllerBase
         pro.StatusId = dto.StatusId;
         pro.SubCategoryId = dto.SubCategoryId;
         pro.UpdatedAt = DateTime.UtcNow;
+        pro.Slug = dto.Slug;
         
 
         _context.Products.Update(pro);
