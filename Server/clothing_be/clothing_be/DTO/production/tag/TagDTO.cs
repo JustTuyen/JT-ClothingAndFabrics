@@ -10,7 +10,7 @@
     public class CreateTagDTO
     {
         public string Name { get; set; } = string.Empty;
-        public int StatusId { get; set; }
+        //public int StatusId { get; set; }
     }
 
     public class UpdateTagDTO

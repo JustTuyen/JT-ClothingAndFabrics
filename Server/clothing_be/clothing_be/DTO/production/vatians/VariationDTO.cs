@@ -31,7 +31,7 @@ namespace clothing_be.DTO.production.vatians
         public decimal AddPrice { get; set; }
         public int StockQuantity { get; set; }
         public string Sku { get; set; } = string.Empty;
-        public int StatusId { get; set; }
+        //public int StatusId { get; set; }
         public IFormFile? Image { get; set; }
         public int ProductId { get; set; }
         public List<int> AttributeValueIds { get; set; } = new();

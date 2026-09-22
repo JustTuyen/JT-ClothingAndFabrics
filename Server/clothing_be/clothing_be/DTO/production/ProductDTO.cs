@@ -7,6 +7,7 @@ namespace clothing_be.DTO.production
     public class ProductDTO
     {
         public int Id { get; set; }
+        public string Slug { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public decimal BasePrice { get; set; }
@@ -15,7 +16,7 @@ namespace clothing_be.DTO.production
         public string StatusName { get; set; }
         public List<ListingVariationDTO> Variations { get; set; } = new();
         public List<MiniImageGalleryDTO> ImageGalleries { get; set; } = new();
-        public List<MiniProductTagDTO> Tags { get; set; } = new();
+        //public List<MiniProductTagDTO> Tags { get; set; } = new();
     }
 
     public class MenuProductDTO
@@ -45,7 +46,8 @@ namespace clothing_be.DTO.production
         public string Description { get; set; } = string.Empty;
         public decimal BasePrice { get; set; }
         public int SubCategoryId { get; set; }
-        public int StatusId { get; set; }
+       //public int StatusId { get; set; }
+        public string Slug { get; set; }
         public List<IFormFile> Images { get; set; } = new();
         public List<int> TagIds { get; set; } = new();
 
@@ -63,6 +65,7 @@ namespace clothing_be.DTO.production
         public decimal BasePrice { get; set; }
         public int StatusId { get; set; }
         public int SubCategoryId { get; set; }
+        public string Slug { get; set; }
         public List<IFormFile> Images { get; set; } = new();
         public List<int> TagIds { get; set; } = new();
         public List<int> VariationsId { get; set; } = new();
@@ -84,5 +87,12 @@ namespace clothing_be.DTO.production
 
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 20;
+    }
+
+    public class ProductCardDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public decimal BasePrice { get; set; }
     }
 }
