@@ -39,8 +39,9 @@ namespace clothing_be.Models.Others
 
         //
         public virtual ICollection<ImageGalleryModel> ImageGalleries { get; set; } = new List<ImageGalleryModel>();
-        public virtual ICollection<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
-        public virtual ICollection<VariationModel> Variations { get; set; } = new List<VariationModel>();
-
+        //public virtual ICollection<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
+        //public virtual ICollection<VariationModel> Variations { get; set; } = new List<VariationModel>();
+        //public virtual ICollection<BannerModel> Banners { get; set; } = new List<BannerModel>();
+        //public virtual ICollection<DiscountModel> Discounts { get; set; } = new List<DiscountModel>();
     }
 }
