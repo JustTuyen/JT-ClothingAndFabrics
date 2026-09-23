@@ -27,7 +27,7 @@ namespace clothing_be.Models.productions
         [Required(ErrorMessage = "Giá là bắt buộc")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal BasePrice { get; set; }
-
+        public string? Slug { get; set; }
         public int ViewCount { get; set; } = 0;
         public int LikeCount { get; set; } = 0;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

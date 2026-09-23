@@ -14,9 +14,12 @@ namespace clothing_be.DTO.production
         public decimal? DiscountPercentage { get; set; }
         public string SubCategoryName { get; set; }
         public string StatusName { get; set; }
-        public List<ListingVariationDTO> Variations { get; set; } = new();
-        public List<MiniImageGalleryDTO> ImageGalleries { get; set; } = new();
+
+
+        //public List<ListingVariationDTO> Variations { get; set; } = new();
+        //public List<MiniImageGalleryDTO> ImageGalleries { get; set; } = new();
         //public List<MiniProductTagDTO> Tags { get; set; } = new();
+        //public int ViewCount { get; set; }
     }
 
     public class MenuProductDTO
@@ -25,11 +28,40 @@ namespace clothing_be.DTO.production
         public string Name { get; set; } = string.Empty;
         public decimal BasePrice { get; set; }
         public decimal? DiscountPercentage { get; set; }
+        public string Slug { get; set; } = string.Empty;
+        public string StatusName { get; set; }
+        public string ImageURL { get; set; }
+        //public List<ListingVariationDTO> Variations { get; set; } = new();
+        //public List<MiniImageGalleryDTO> ImageGalleries { get; set; } = new();
+    }
+
+
+    public class ProductModallDTO
+    {
+        public int Id { get; set; }
+        //public string Slug { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        //public string Description { get; set; } = string.Empty;
+        public decimal BasePrice { get; set; }
+        public decimal? DiscountPercentage { get; set; }
+        public string SubCategoryName { get; set; }
         public string StatusName { get; set; }
         public List<ListingVariationDTO> Variations { get; set; } = new();
         public List<MiniImageGalleryDTO> ImageGalleries { get; set; } = new();
-        public List<MiniProductTagDTO> Tags { get; set; } = new();
+
+        //public List<MiniProductTagDTO> Tags { get; set; } = new();
+        //public int ViewCount { get; set; }
     }
+
+
+    public class ProductCardDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public decimal BasePrice { get; set; }
+    }
+
+
 
     public class MiniProductDTO
     {
@@ -89,10 +121,5 @@ namespace clothing_be.DTO.production
         public int PageSize { get; set; } = 20;
     }
 
-    public class ProductCardDTO
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public decimal BasePrice { get; set; }
-    }
+    
 }

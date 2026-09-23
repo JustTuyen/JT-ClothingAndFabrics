@@ -178,6 +178,15 @@ public class VariationModelsController : ControllerBase
         if (dto == null) return BadRequest("Dto or request data is missing");
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
+        var pro = await _context.Products
+            .Include(c => c.ImageGalleries)
+            .Include(c => c.Status)
+            .FirstOrDefaultAsync(c => c.Id == dto.ProductId);
+        if (pro == null) { return BadRequest("Product is not found"); }
+
+        var status = await _context.Statuses.Where(st => st.Name == "Active" && st.Type == "Variations").FirstOrDefaultAsync();
+        if (status == null) { return BadRequest("Status is not found"); }
+        
         ImageModel? image = null;
         if (dto.Image != null)
         {
@@ -193,16 +202,15 @@ public class VariationModelsController : ControllerBase
                 IsThumbnail = false,
             };
 
-            _context.Images.Add(image);
+            var nextDisplayOrder = pro.ImageGalleries.Any() ? pro.ImageGalleries.Max(p => p.DisplayOrder) + 1 : 0;
+            var proImgGallary = await _context.ImageGalleries.Where(i => i.ProductId == dto.ProductId).FirstOrDefaultAsync();
+            pro.ImageGalleries.Add(new ImageGalleryModel
+            {
+                Image = image,
+                DisplayOrder = nextDisplayOrder
+            });
         }
 
-        var pro = await _context.Products.Include(c => c.Status).FirstOrDefaultAsync(c => c.Id == dto.ProductId);
-        if (pro == null) { return BadRequest("Product is not found"); }
-
-        var status = await _context.Statuses.Where(st => st.Name == "Active" && st.Type == "Variations").FirstOrDefaultAsync();
-        if (status == null) { return BadRequest("Status is not found"); }
-
-     
         var AttributeValues = new List<VariantAttributeValuesModel>();
         if(dto.AttributeValueIds!=null && dto.AttributeValueIds.Any())
         {
@@ -216,6 +224,8 @@ public class VariationModelsController : ControllerBase
                 });
             }
         }
+
+
 
         var varian = new VariationModel
         {

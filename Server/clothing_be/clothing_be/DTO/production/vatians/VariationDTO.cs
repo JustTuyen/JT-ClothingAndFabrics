@@ -20,9 +20,9 @@ namespace clothing_be.DTO.production.vatians
         public int Id { get; set; }
         public decimal AddPrice { get; set; }
         public int StockQuantity { get; set; }
-        public string Sku { get; set; } = string.Empty;
+        //public string Sku { get; set; } = string.Empty;
         public string StatusName { get; set; }
-        public string? ImageURL { get; set; }
+        //public string? ImageURL { get; set; }
         public List<VariantAttributeValuesDTO> VariantAttributes { get; set; } = new();
     }
 
@@ -53,6 +53,7 @@ namespace clothing_be.DTO.production.vatians
     public class VariantAttributeValuesDTO 
     {
         public int Id { get; set; }
+        public string AttributeTypes { get; set; }
         public string AttributeValues { get; set; }
     }
 
