@@ -1,8 +1,9 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 //
 import place from '../../assets/place.webp'
 //
+import { formatPrice } from "../../store/Ult";
 import DetailCard from "../ProductDetailCard";
 //
 import Chip from '@mui/material/Chip';
@@ -23,15 +24,45 @@ import ElectricBoltOutlinedIcon from '@mui/icons-material/ElectricBoltOutlined';
 import WhatshotOutlinedIcon from '@mui/icons-material/WhatshotOutlined';
 //css
 import './css/DisplayTab.css'
+import api from "../../api/ApiHandler";
 
+type Product = {
+    id: number
+    name: string
+    basePrice: number
+    discountPercentage: number
+    statusName: string
+    slug: string
+    imageURL: string
+}
 function NewArrival(){
+    const [products, setProduct] = useState<Product[]>([]);
+
+    useEffect(()=>{
+        async function fetchNewProduct() {
+            try{
+                const {data} = await api.get(`https://localhost:7106/api/ProductModels/filter?SortBy=_&Page=1&PageSize=20`);
+                setProduct(data.results ?? data);
+            } catch(error){
+                console.log(error);
+            }
+        }
+
+        fetchNewProduct()
+    }, [])
+
+    const [selectedId, setSelectedId] = useState<number | null>(null);
+
+
     return(
         <>
         <div className="flex flex-col items-center gap-4 py-8">
             <div className="grid
             grid-cols-2 gap-4
             lg:grid-cols-4 ld:w-w-3/4" >
-                <Card sx={{ maxWidth: 345}}>
+                {products.map((product, index) =>
+                
+                <Card key={index} sx={{ maxWidth: 345}} onClick={() => setSelectedId(product.id)}>
                     <CardActionArea>
                         <div className="relative flex">
                             <div className="absolute top-0 left-0 p-3 z-10">
@@ -41,19 +72,21 @@ function NewArrival(){
                                     sx={{backgroundColor: '#00B7CD', color: 'white', fontWeight: 'bold'}}/>
                                 </Stack>
                             </div>
+                            {product.discountPercentage !== null && (
                             <div className="absolute top-10 md:top-0 left-0 md:left-auto md:right-0 p-3 z-10">
                                 <Stack direction="row" spacing={1}>
                                     <Tooltip title="Giảm giá">
                                         <Chip icon={<ElectricBoltOutlinedIcon color="inherit" sx={{ color: 'white'}}/>} 
-                                        label="-14%" id='discount-chip'
+                                        label={`${product.discountPercentage}%`} id='discount-chip'
                                         sx={{backgroundColor: '#DF301C', color: 'white', fontWeight: 'bold'}}/>
                                     </Tooltip>
                                 </Stack>
                             </div>
+                            )}
                             <CardMedia
                             component="img"
                             height="140"
-                            image={place}
+                            image={product.imageURL}
                             alt="green iguana"
                             />
                         </div>
@@ -61,10 +94,10 @@ function NewArrival(){
                     <CardContent>
                         <div className="flex flex-col gap-2">
                             <Typography variant="body2" sx={{ color: 'black'}}>
-                                Áo Sơ Mi Tay Ngắn Slippery - 88635 - Big Size Upto 5XL
+                                {product.name}
                             </Typography>
                             <Typography variant="caption" sx={{ color: '#DF301C', fontWeight: '800' }}>
-                                310,000₫ 
+                                {formatPrice(product.basePrice)}
                                 <span className="text-[#333] font-semibold line-through mx-2">
                                     310,000₫
                                 </span>
@@ -75,11 +108,15 @@ function NewArrival(){
                             sx={{ backgroundColor: '#DF301C', borderRadius: '16px'}}>
                                 Thêm vào giỏ
                             </Button>
-                            <DetailCard/>
+                            {selectedId !== null && (
+                                <DetailCard id={selectedId} />
+                            )}
                         </CardActions>  
                     </CardContent>
-                </Card>              
+                </Card>     
+            )}         
             </div>
+
             <div className="">
                 <button type="button" id="check-all">
                     XEM TẤT CẢ TRONG NEW ARRIVAL

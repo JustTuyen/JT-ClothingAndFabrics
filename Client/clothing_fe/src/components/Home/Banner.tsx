@@ -1,30 +1,43 @@
 import './css//Banner.css'
-import { useState } from "react"
+import React, { useEffect, useState } from "react"
 import CircleIcon from '@mui/icons-material/Circle';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
-type ImageSliderProps = {
-    images: {
-        url: string
-        alt: string
-    }[]
+import api from '../../api/ApiHandler';
+
+type BannerItem  = {
+    imageURL: string
+    alt: string
 }
 
-export default function Banner({ images }: ImageSliderProps){
-    const [imageIndex, setImageIndex] = useState(0)
+export default function Banner(){
+
+    const [banners, setBanner] = useState<BannerItem[]>([]);
+    const [imgIndex, setImgIndex] = useState(0);
+
+    useEffect(()=>{
+        async function fetchBanners() {
+            try{
+                const {data} = await api.get(`/BannerModels/listing`);
+                setBanner(data.results ?? data);
+            } catch(error){
+                console.error(error);
+            }
+        }
+
+        fetchBanners()
+    }, []);
+
+    
     function showNextImage() {
-        setImageIndex(index => {
-        if (index === images.length - 1) return 0
-        return index + 1
-        })
+        setImgIndex(index => 
+            (index === banners.length-1 ? 0 : index + 1 ))
     }
 
     function showPrevImage() {
-        setImageIndex(index => {
-        if (index === 0) return images.length - 1
-        return index - 1
-        })
+        setImgIndex(index => 
+        (index === 0 ? banners.length-1 : index -1 ))
     }
 
     return(
@@ -44,16 +57,19 @@ export default function Banner({ images }: ImageSliderProps){
                 overflow: "hidden",
                 }}
             >
-                {images.map(({ url, alt }, index) => (
-                <img
-                    key={url}
-                    src={url}
-                    alt={alt}
-                    aria-hidden={imageIndex !== index}
+                {banners.map((banner, index) =>
+                    <img
+                    key={index}
+                    src={banner.imageURL}
+                    aria-hidden={imgIndex !== index}
                     className="img-slider-img"
-                    style={{ translate: `${-100 * imageIndex}%` }}
+                    style={{ translate: `${-100 * imgIndex}%` }}
                 />
-                ))}
+                
+                )}
+
+
+               
             </div>
                 <button
                     onClick={showPrevImage}
@@ -81,14 +97,14 @@ export default function Banner({ images }: ImageSliderProps){
                     gap: ".25rem",
                     }}
                 >
-                    {images.map((_, index) => (
+                    {banners.map((_, index) => (
                     <button
                         key={index}
                         className="img-slider-dot-btn"
                         aria-label={`View Image ${index + 1}`}
-                        onClick={() => setImageIndex(index)}
+                        onClick={() => setImgIndex(index)}
                     >
-                        {index === imageIndex ? (
+                        {index === imgIndex ? (
                         <CircleIcon aria-hidden color="primary"/>
                         ) : (
                         <CircleOutlinedIcon aria-hidden color="primary"/>

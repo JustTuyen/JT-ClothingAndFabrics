@@ -13,6 +13,8 @@ import Tooltip from '@mui/material/Tooltip';
 //
 import NumberSpinner from './NumberSpinner';
 import ItemGallery from './Item/ItemGallery';
+import api from '../api/ApiHandler';
+import { formatPrice } from '../store/Ult';
 //
 const style = {
     position: 'absolute',
@@ -34,20 +36,110 @@ const style = {
     },
 };
 
+type VariantAttribute = {
+    id: number
+    attributeTypes: string      
+    attributeValues: string     
+}
 
-export default function DetailCard(){
+
+type Variation = {
+    id: number
+    addPrice: number
+    stockQuantity: number
+    statusName: string | null
+    variantAttributes: VariantAttribute[]  
+}
+
+type ImageGallery = {
+    id: number
+    displayOrder: number
+    imageURL: string | null
+}
+
+type ProductDetail = {
+    id: number
+    name: string
+    basePrice: number
+    discountPercentage: number | null
+    statusName: string | null
+    variations: Variation[] 
+    imageGalleries: ImageGallery[]     
+}
+
+type DetailCardProps = {
+    id: number
+}
+
+export default function DetailCard({ id }: DetailCardProps){
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-
     const [selectedSize, setSelectedSize] = React.useState("m");
-    const options = [
-        { label: "Small", value: "s" },
-        { label: "Medium", value: "m" },
-        { label: "Large", value: "l" },
-        { label: "Small", value: "s" },
-        
-    ];
+    const [selectedAttributes, setSelectedAttributes] = React.useState<Record<string, string>>({});
+
+    const [product, setProduct] = React.useState<ProductDetail| null>(null);
+    const [loading, setLoading] = React.useState(false);
+
+    React.useEffect(()=>{
+        if (!id) return;
+
+        async function fetchProductDetail() {
+            try{
+                const {data} = await api.get(`/ProductModels/detail/${id}`);
+                setProduct(data);
+            } catch(error){
+                console.log(error)
+            } finally{
+                setLoading(false)
+            }
+        }
+
+       if (id) fetchProductDetail();
+    }, [id])
+    
+   
+
+    if (loading || !product) return(
+        <>
+        <p>Loading</p>
+        </>
+    );
+
+    function handleSelect(attributeType: string, value: string) {
+        setSelectedAttributes(prev => ({ ...prev, [attributeType]: value }));
+    }
+
+     function findMatchingVariation(
+        variations: Variation[],
+        selected: Record<string, string>
+    ): Variation | undefined {
+        return variations.find(v =>
+            v.variantAttributes.every(attr => selected[attr.attributeTypes] === attr.attributeValues)
+            && v.variantAttributes.length === Object.keys(selected).length
+        );
+    }
+
+    function groupAttributesByType(variations: Variation[]): Record<string, string[]> {
+        const grouped: Record<string, Set<string>> = {};
+        for (const variation of variations) {
+            for (const attr of variation.variantAttributes) {
+                if (!grouped[attr.attributeTypes]) {
+                    grouped[attr.attributeTypes] = new Set();
+                }
+                grouped[attr.attributeTypes].add(attr.attributeValues);
+            }
+        }
+
+        const result: Record<string, string[]> = {};
+        for (const key in grouped) {
+            result[key] = Array.from(grouped[key]);
+        }
+        return result;
+    }
+
+    const matchedVariation = findMatchingVariation(product.variations, selectedAttributes);
+    const groupedAttributes = groupAttributesByType(product.variations);
 
     return(
         <>
@@ -63,6 +155,7 @@ export default function DetailCard(){
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
             >
+                {product?.statusName === 'Active' ? (
                 <Box sx={style}>
                     <div className="grid grid-cols-1 md:grid-cols-2 max-h-[90vh] overflow-y-auto divide-y md:divide-y-0 md:divide-x divide-gray-100">
                         <div className="">
@@ -72,54 +165,58 @@ export default function DetailCard(){
                             <div className="">
                                 <div className="flex max-w-full">
                                     <p className="text-[18px] font-bold">
-                                        Quần Jeans Slim Maxlook 7473: Định Hình Phong Cách Nam Tính, Lịch Lãm Cùng Old Sailor
+                                       {product?.name}
                                     </p>
                                 </div>
 
                                 {/* STATUS */}
                                 <div className="flex gap-2">
                                     <p className="text-sm text-black">Tình trạng: <span className='font-bold'>Còn hàng</span></p>
-                                    <p>|</p>
-                                    <p className="text-sm text-black">Thương hiệu: <span className='font-bold'>Old Sailor</span></p>
+                                    {/* <p>|</p>
+                                    <p className="text-sm text-black">Thương hiệu: <span className='font-bold'>Old Sailor</span></p> */}
                                 </div>
                             </div>
                             
                             {/* GIA SAN PHAM */}
                             <div className="text-[24px] font-bold p-4 rounded-2xl
                             text-[#DF301C] bg-[#EEEEEE]">
-                                <p>540,000₫</p>
+                                {formatPrice(product.basePrice)}
                             </div>
 
                             {/* KICH THUOC */}
+                            {Object.entries(groupedAttributes).map(([attributeType, values]) => (
                             <div className="grid grid-cols-4 gap-2 p-4">
                                 <div className='col-span-1 flex items-center'>
                                     <p className="font-black text-sm text-black">Kích thước:</p>
                                 </div>
 
                                 <div className="col-span-3 flex flex-wrap gap-2 justify-start">
-                                    {options.map((option) => (
-                                    <label key={option.value} className="cursor-pointer">
-                                        <input
-                                        type="radio"
-                                        name="size"
-                                        value={option.value}
-                                        checked={selectedSize === option.value}
-                                        onChange={(e) => setSelectedSize(e.target.value)}
-                                        className="sr-only peer"
-                                        />
-                                        <span
-                                        className="inline-block px-4 py-2 text-sm font-medium border rounded-lg 
-                                        transition-all duration-200 border-gray-300 bg-white text-black
-                                        hover:border-[#DF301C] hover:text-[#DF301C]
-                                        peer-checked:bg-[#DF301C] peer-checked:text-white peer-checked:border-[#DF301C]
-                                        peer-focus-visible:ring-2 peer-focus-visible:ring-[#DF301C] peer-focus-visible:ring-offset-2"
-                                        >
-                                        {option.label}
-                                        </span>
-                                    </label>
+                                    {values.map((value) => (
+                                        <label key={value} className="cursor-pointer">
+                                            <input
+                                            type="radio"
+                                            name={attributeType}
+                                            value={value}
+                                            checked={selectedAttributes[attributeType] === value}
+                                            onChange={() => handleSelect(attributeType, value)}
+                                            className="sr-only peer"
+                                            />
+                                            <span
+                                            className="inline-block px-4 py-2 text-sm font-medium border rounded-lg 
+                                            transition-all duration-200 border-gray-300 bg-white text-black
+                                            hover:text-xl
+                                            peer-checked:bg-[#DF301C] peer-checked:text-white peer-checked:border-[#DF301C]
+                                            peer-focus-visible:ring-2 peer-focus-visible:ring-[#DF301C] peer-focus-visible:ring-offset-2"
+                                            >
+                                            {value}
+                                            </span>
+                                        </label>
                                     ))}
                                 </div>
                             </div>
+                            ))}
+
+
 
                             {/* SO LUONG */}
                             <div className="grid grid-cols-4 gap-2 p-4">
@@ -157,8 +254,17 @@ export default function DetailCard(){
                         </div>
                     </div>
                 </Box>
+                ):(
+                    <div className="">
+                        <p>No data</p>
+                    </div>
+                )}
             </Modal>
         </div>
         </>
+
+        
     )
+
+    
 }

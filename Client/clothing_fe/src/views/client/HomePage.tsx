@@ -5,6 +5,7 @@ import DisplayTab from "../../components/Home/DisplayTab"
 import CategoryLog from "../../components/Home/CategoryLog"
 import Footer from "../../components/Footer"
 import DetailCard from "../../components/ProductDetailCard"
+import { formatPrice } from "../../store/Ult"
 //
 import Banner01 from '../../assets/banner01.webp'
 import Banner02 from '../../assets/banner02.webp'
@@ -28,10 +29,10 @@ import WhatshotOutlinedIcon from '@mui/icons-material/WhatshotOutlined';
 //css
 import './css/Home.css'
 
-const IMAGES = [
-  { url: Banner01, alt: "Car One" },
-  { url: Banner02, alt: "Car Two" },
-]
+// const IMAGES = [
+//   { url: Banner01, alt: "Car One" },
+//   { url: Banner02, alt: "Car Two" },
+// ]
 
 export default function Home(){
     
@@ -39,7 +40,7 @@ export default function Home(){
         <>
         <Navbar/>
         <div className="min-h-screen flex flex-col gap-8">
-            <Banner images={IMAGES} />
+            <Banner  />
             <div className="flex justify-center">
                 <Discount/>
             </div>
