@@ -25,7 +25,8 @@ builder.Services.AddCors(options =>
 //DB
 var connectionString = builder.Configuration.GetConnectionString("cnn");
 builder.Services.AddDbContext<MyDbContextApplication>(options =>
-    options.UseNpgsql(connectionString).LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging()
+    options.UseNpgsql(connectionString)
+    .LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging()
 );
 
 //S3
@@ -66,18 +67,16 @@ builder.Services.AddScoped<IImageUploadService, S3ImageUploadService>();
 //});
 
 
-
-
 //builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 //builder.Services.AddAWSService<IAmazonS3>();
 //builder.Services.AddScoped<IImageUploadService, S3ImageUploadService>();
 
 //Timeout
-//builder.WebHost.ConfigureKestrel(options =>
-//{
-//    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
-//    options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(30);
-//});
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
+    options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(30);
+});
 
 //policy.WithOrigins("https://yourdomain.com")
 //      .AllowAnyHeader()
@@ -85,6 +84,7 @@ builder.Services.AddScoped<IImageUploadService, S3ImageUploadService>();
 
 var app = builder.Build();
 
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
