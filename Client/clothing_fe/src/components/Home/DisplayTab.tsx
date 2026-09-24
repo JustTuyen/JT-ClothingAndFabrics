@@ -51,7 +51,7 @@ function NewArrival(){
         fetchNewProduct()
     }, [])
 
-    const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [selectedId, setSelectedId] = useState<number | null>(1);
 
 
     return(
@@ -60,9 +60,9 @@ function NewArrival(){
             <div className="grid
             grid-cols-2 gap-4
             lg:grid-cols-4 ld:w-w-3/4" >
-                {products.map((product, index) =>
+                {products.map((product) =>
                 
-                <Card key={index} sx={{ maxWidth: 345}} onClick={() => setSelectedId(product.id)}>
+                <Card key={product.id} sx={{ maxWidth: 345}} onClick={() => setSelectedId(product.id)}>
                     <CardActionArea>
                         <div className="relative flex">
                             <div className="absolute top-0 left-0 p-3 z-10">

@@ -75,7 +75,6 @@ export default function DetailCard({ id }: DetailCardProps){
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const [selectedSize, setSelectedSize] = React.useState("m");
     const [selectedAttributes, setSelectedAttributes] = React.useState<Record<string, string>>({});
 
     const [product, setProduct] = React.useState<ProductDetail| null>(null);
@@ -159,7 +158,7 @@ export default function DetailCard({ id }: DetailCardProps){
                 <Box sx={style}>
                     <div className="grid grid-cols-1 md:grid-cols-2 max-h-[90vh] overflow-y-auto divide-y md:divide-y-0 md:divide-x divide-gray-100">
                         <div className="">
-                            <ItemGallery/>
+                            <ItemGallery images={product.imageGalleries}/>
                         </div>
                         <div className="shadow-md flex p-2 flex-col gap-2">
                             <div className="">
