@@ -334,6 +334,12 @@ namespace clothing_be.Data
                 .HasForeignKey(r => r.ImageId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            //discount
+            modelBuilder.Entity<DiscountModel>()
+                .HasOne(r => r.Image)
+                .WithMany()
+                .HasForeignKey(r => r.ImageId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     
     }

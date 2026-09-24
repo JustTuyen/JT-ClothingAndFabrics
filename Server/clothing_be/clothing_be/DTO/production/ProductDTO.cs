@@ -16,8 +16,8 @@ namespace clothing_be.DTO.production
         public string StatusName { get; set; }
 
 
-        //public List<ListingVariationDTO> Variations { get; set; } = new();
-        //public List<MiniImageGalleryDTO> ImageGalleries { get; set; } = new();
+        public List<ListingVariationDTO> Variations { get; set; } = new();
+        public List<MiniImageGalleryDTO> ImageGalleries { get; set; } = new();
         //public List<MiniProductTagDTO> Tags { get; set; } = new();
         //public int ViewCount { get; set; }
     }
@@ -111,6 +111,7 @@ namespace clothing_be.DTO.production
         public DateTime? CreatedFrom { get; set; }
         public DateTime? CreatedTo { get; set; }
 
+        public bool? HasDiscount { get; set; }
         public int? MinViewCount { get; set; }
 
         // "CreatedAt" , "ViewCount" , "Price"

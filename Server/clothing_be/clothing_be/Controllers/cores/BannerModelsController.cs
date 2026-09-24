@@ -98,10 +98,8 @@ public class BannerModelsController : ControllerBase
         if (dto == null) return BadRequest("Dto or request data is missing");
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var sta = await _context.Statuses.FirstOrDefaultAsync(c => c.Id == dto.StatusId);
-        if (sta == null) { return BadRequest("Status is not found"); }
-        if (sta.Name != "Active") { return BadRequest("wrong status name or type"); }
-        if (sta.Type != "Banners") { return BadRequest("wrong status type"); }
+        var sta = await _context.Statuses.Where(w => w.Name == "Active" && w.Type == "Banners").FirstOrDefaultAsync();
+        if (sta == null) return BadRequest("Status for banner is null or wrong");
 
         ImageModel? image = null;
         if (dto.Image != null)
@@ -127,7 +125,7 @@ public class BannerModelsController : ControllerBase
             Name = dto.Name,
             Description = dto.Description,
             Image = image,
-            StatusId = dto.StatusId,
+            StatusId = sta.Id,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             DisplayOrder = dto.DisplayOrder,
