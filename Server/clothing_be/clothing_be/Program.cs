@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using clothing_be.Data;
+using clothing_be.Services.BackGround;
 using clothing_be.Services.Media;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -70,6 +71,9 @@ builder.Services.AddScoped<IImageUploadService, S3ImageUploadService>();
 //builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 //builder.Services.AddAWSService<IAmazonS3>();
 //builder.Services.AddScoped<IImageUploadService, S3ImageUploadService>();
+
+//BACK GROUND SERVICE
+builder.Services.AddHostedService<DiscountExpirationService>();
 
 //Timeout
 builder.WebHost.ConfigureKestrel(options =>
