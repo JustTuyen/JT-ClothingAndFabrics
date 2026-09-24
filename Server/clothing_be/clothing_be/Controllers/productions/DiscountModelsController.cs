@@ -33,6 +33,36 @@ public class DiscountModelsController : ControllerBase
             .Include(d => d.Products)
             .ToListAsync();
 
+        //var status = await _context.Statuses.Where(st => st.Name == "Closed" && st.Type == "Discounts").FirstOrDefaultAsync();
+        //if (status == null) { return BadRequest("Status is not found"); }
+
+        //var now = DateTime.UtcNow;
+        //var hasChanges = false;
+
+        //foreach (var discount in discounts)
+        //{
+        //    if (discount.ExpireAt <= now &&
+        //    discount.StatusId != status.Id)
+        //    {
+        //        discount.StatusId = status.Id;
+        //        hasChanges = true;
+        //    }
+        //}
+
+        //if (hasChanges)
+        //{
+        //    await _context.SaveChangesAsync();
+        //}
+
+        //foreach (var discount in discounts)
+        //{
+        //    if (discount.StatusId == status.Id)
+        //    {
+        //        discount.Status = status;
+        //    }
+        //}
+
+
         var dto = discounts.Select(dis => new DiscountDTO
         {
             Id = dis.Id,

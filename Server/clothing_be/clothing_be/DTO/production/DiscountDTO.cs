@@ -40,4 +40,10 @@ namespace clothing_be.DTO.production
         public int StatusId { get; set; }
         public List<int> ProductIds { get; set; } = new();
     }
+
+    public class CheckDiscountDTO
+    {
+        public int Id { get; set; }
+        public DateTime ExpireAt { get; set; }
+    }
 }
