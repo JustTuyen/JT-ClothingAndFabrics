@@ -36,8 +36,8 @@ namespace clothing_be.Models.productions
        
         [Required]
         public TimeSpan Duration { get; set; }
-
-        public DateTime ExpireAt => StartAt.Add(Duration);
+        [Required]
+        public DateTime ExpireAt { get; set; }
 
         //
         public int? ImageId { get; set; }

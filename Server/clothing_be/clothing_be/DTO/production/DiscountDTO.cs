@@ -41,9 +41,28 @@ namespace clothing_be.DTO.production
         public List<int> ProductIds { get; set; } = new();
     }
 
-    public class CheckDiscountDTO
+    public class UpdateDiscountDTO
     {
-        public int Id { get; set; }
-        public DateTime ExpireAt { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string? Codes { get; set; }
+        public decimal Percentage { get; set; }
+        public DateTime StartAt { get; set; }
+        public TimeSpan Duration { get; set; }
+        public IFormFile? Image { get; set; }
+        public int StatusId { get; set; }
+        public List<int> ProductIds { get; set; } = new();
+    }
+
+
+    public class UpdateDiscountProductsDTO
+    {
+        //public int Id { get; set; }
+        public List<int> ProductIds { get; set; } = new();
+    }
+
+    public class UpdateDiscountStatusDTO
+    {
+        public int StatusId { get; set; }
     }
 }
