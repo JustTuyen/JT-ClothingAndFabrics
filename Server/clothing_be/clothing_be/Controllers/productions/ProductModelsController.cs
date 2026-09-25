@@ -123,7 +123,7 @@ public class ProductModelsController : ControllerBase
                         .Select(vav => new VariantAttributeValuesDTO
                         {
                             Id = vav.Id,
-                            AttributeTypes = vav.AttributeValue.Attribute != null ? vav.AttributeValue.Value : null,
+                            AttributeTypes = vav.AttributeValue.Attribute != null ? vav.AttributeValue.Attribute.Type : null,
                             AttributeValues = vav.AttributeValue != null ? vav.AttributeValue.Value : null
 
                         }).ToList()
