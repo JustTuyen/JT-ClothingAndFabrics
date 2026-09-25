@@ -1,44 +1,47 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SliderPackage from "react-slick";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Slider = (SliderPackage as any).default || SliderPackage;
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Button } from "@mui/material";
+import api from "../../api/ApiHandler";
 
-interface ReviewData {
-  name: string;
-  img: string;
-  review: string;
+//
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+//
+import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
+//
+type Discount = {
+    id: number
+    title: string
+    description: string
+    statusName: string
+    imageURL: string
 }
 
-
-const data: ReviewData[] = [
-  {
-    name: "John Morgan",
-    img: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200",
-    review: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    name: "Ellie Anderson",
-    img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200",
-    review: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    name: "Nia Adebayo",
-    img: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=200",
-    review: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    name: "Rigo Louie",
-    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200",
-    review: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-];
-
-
 function Discount() {
-   const sliderRef = useRef<typeof Slider | null>(null);
+
+    const [discounts, setDiscount] = useState<Discount[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(()=>{
+        async function fetDiscount() {
+            try{
+                const {data} = await api.get("/DiscountModels/listings");
+                setDiscount(data.results ?? data);
+            } catch (error){
+                console.log(error);
+            } finally{
+                setLoading(true);
+            }
+        }
+
+        fetDiscount()
+    }, [])
+
+    const sliderRef = useRef<typeof Slider | null>(null);
 
     const next = () => {
         sliderRef.current?.slickNext();
@@ -61,7 +64,7 @@ function Discount() {
         {
             breakpoint: 1024,
             settings: {
-            slidesToShow: 2,
+            slidesToShow: 1,
             dots: true
             },
         },
@@ -73,6 +76,10 @@ function Discount() {
         },
         ],
     };
+
+    if(loading==true){
+        <p>Loading...</p>
+    }
 
     return (
         <div className="w-4/5">
@@ -89,24 +96,18 @@ function Discount() {
             </div>
             <div className="">
                 <Slider ref={sliderRef} {...settings}>
-                {data.map((d) => (
-                <div key={d.name} className="px-2">
-                    <div className="bg-white h-[50vh] text-black 
-                    rounded-xl shadow-md overflow-hidden">
-                        
-                        <div className="h-56 bg-indigo-500 flex justify-center items-center rounded-t-xl">
-                            <img src={d.img} alt={d.name} className="h-44 w-44 rounded-full object-cover border-4 border-white" />
-                        </div>
-
-                        <div className="flex flex-col items-center justify-center gap-4 p-4">
-                            <p className="text-xl font-semibold">{d.name}</p>
-                            <p className="text-center text-sm text-gray-600 line-clamp-3">{d.review}</p>
-                            <button className="bg-indigo-500 hover:bg-indigo-600 text-white text-lg px-6 py-1.5 rounded-xl transition-colors">
-                                Read More
-                            </button>
-                        </div>
+                {discounts.map((discount) => (
+                <Card key={discount.id} sx={{cursor: 'pointer'}}>
+                    <CardMedia 
+                    sx={{ height: 300, objectFit: 'fit'}}
+                    image={discount.imageURL}
+                    title="discount image"
+                    />
+                    <div className="p-4 flex justify-between bg-[#8CE4FF]">
+                        <p className="text-[24px] font-bold">CHECK OUT</p>
+                        <DoubleArrowIcon sx={{color: 'black'}}/>
                     </div>
-                </div>
+                </Card>
                 ))}
                 </Slider>
             </div>

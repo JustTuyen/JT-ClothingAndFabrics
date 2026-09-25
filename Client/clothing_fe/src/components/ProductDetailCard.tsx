@@ -247,7 +247,7 @@ export default function DetailCard({ id }: DetailCardProps){
                                     <Button size='large' 
                                     fullWidth variant="contained"
                                     sx={{backgroundColor: '#DF301C',fontWeight: 'bold'}}
-                                    >MUA NGAY</Button>
+                                    >XEM TRANG</Button>
                                 </Stack>
                             </div>
                         </div>

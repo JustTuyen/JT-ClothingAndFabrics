@@ -10,7 +10,7 @@ import Menu from './views/client/MenuPage'
 //
 const router = createBrowserRouter([
   {path:'/', element:<Home/>},
-  {path:'/products', element:<ItemPage/>},
+  {path:'/products/:slug/:id', element:<ItemPage/>},
   {path:'/collections', element:<Menu/>},
   {path:'*', element:<NotFound/>},
 

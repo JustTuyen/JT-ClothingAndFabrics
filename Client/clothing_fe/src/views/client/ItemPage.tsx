@@ -10,23 +10,62 @@ import Box from '@mui/material/Box';
 import NumberSpinner from '../../components/NumberSpinner';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import { useParams } from 'react-router';
+import api from '../../api/ApiHandler';
+//
+type Product = {
+    id: number
+    slug: string
+    name: string
+    description: string
+    basePrice: number
+    discountPercentage: number
+    subCategoryName: string
+    statusName: string
+    variations: Variations[]
+    imageGalleries: ImageGalleries[]
+}
+
+type Variations={
+    id: number
+    statusName: string
+    stockQuantity: string
+    variantAttributes: VariantAttributes[]
+}
+
+type VariantAttributes={
+    id: number
+    attributeTypes: string
+    attributeValues: string
+}
+
+type ImageGalleries={
+    id: number
+    displayOrder: number
+    imageURL: string
+}
 
 //
 export default function ItemPage() {
-    const [selectedSize, setSelectedSize] = React.useState("m");
-    const options = [
-        { label: "Small", value: "s" },
-        { label: "Medium", value: "m" },
-        { label: "Large", value: "l" },
-        { label: "Small", value: "s" },
-        { label: "Medium", value: "m" },
-        { label: "Large", value: "l" },
-        { label: "Small", value: "s" },
-         { label: "Small", value: "s" },
-        { label: "Medium", value: "m" },
-        { label: "Large", value: "l" },
-        { label: "Small", value: "s" },
-    ];
+    const {id} = useParams();
+    const [product, setProduct] = React.useState<Product>();
+    const [loading, setLoading] = React.useState(true);
+
+    async function fetchProduct() {
+        try{
+            const{data} = await api.get(`/ProductModels/${id}`);
+            setProduct(data.result ?? data);
+        } catch(error){
+            console.log(error);
+        } finally{
+            setLoading(false);
+        }
+    } 
+
+
+    if(loading){
+        <p>Loading...</p>
+    }
 
     return (
     <>
@@ -39,7 +78,7 @@ export default function ItemPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
             <div className="">
-                <ItemGallery/>
+                {/* <ItemGallery/> */}
             </div>
             <div className="shadow-md p-4 flex flex-col gap-2">
                 <div className="p-4">
